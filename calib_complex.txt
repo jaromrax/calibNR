@@ -1,0 +1,262 @@
+#   sample.txt ---- file with definitions
+#   definitions of variables and assignement  of variables
+#  calibration for  dE1
+#define var T1=5.8038
+#define var T2=5.7621
+#define var T3=5.4971
+#define var T4=5.4542
+#-------------- MYLAR --------------
+# mylar ma  179ug/cm2  asi . tj. 
+#define var mylthick=1.28132
+#-------------- T1 --------------
+#     40.3ug
+#define var de1layau=0.02086
+#define var de1laysi=412
+#define var pde1_1=0.006313
+#define var pde1_0=-0.063576
+#define var dan1=0.35
+#--------------T2--------------
+#      40ug
+#define var  de2layau=0.02070
+#define var  de2laysi=398
+#define var  pde2_1=0.006979
+#define var  pde2_0=-0.046786
+#--------------T6--------------
+#     40ug
+#define var  de6layau=0.02070
+#define var  de6laysi=403
+#define var  pde6_1=0.006299 
+#define var  pde6_0=-0.076051
+#--------------T7--------------
+#     40ug
+#define var  de7layau=0.02070
+#define var  de7laysi=264
+#define var  pde7_1=0.006372
+#define var  pde7_0=-0.107064
+#   BEAM  FROM  MONO  16.18
+#define var T=16.42
+############################
+#free var T=step=0.01
+#free var pde1_1=step=0.0001
+#free var pde1_0=step=0.0001
+#   free var de1laysi=step=0.01
+# xxx free var de1layau=step=0.01
+#    xxxx free var mylthick=step=0.1
+#free var pde2_1=step=0.0001
+#free var pde2_0=step=0.0001
+#
+#free var pde6_1=step=0.0001
+#free var pde6_0=step=0.0001
+#
+#free var pde7_1=step=0.0001
+#free var pde7_0=step=0.0001
+#
+#free var dan1=step=0.001
+#-----------------------------------------------------------------------------------------
+# k    dk           reaction     medium    Exc   Tbeam thickness angle   deadlay livelay P3  P2  P1   P0
+#------------------------------------------------------------------------------------------
+#########################
+#
+#     TELESCOPE      1
+#
+#########################
+# alfa T1  dE
+ 872.593    0.047  he4_he4_he4_he4  mylar  0.0    T4     0.0  0.0   de1layau  de1laysi    0.0 0.0 pde1_1 pde1_0
+ 879.290    0.025  he4_he4_he4_he4  mylar  0.0    T3     0.0  0.0   de1layau  de1laysi    0.0 0.0 pde1_1 pde1_0
+ 921.394    0.057  he4_he4_he4_he4  mylar  0.0    T2     0.0  0.0   de1layau  de1laysi    0.0 0.0 pde1_1 pde1_0
+ 927.968    0.025  he4_he4_he4_he4  mylar  0.0    T1     0.0  0.0   de1layau  de1laysi    0.0 0.0 pde1_1 pde1_0
+#
+###### run 71        28.5 deg   d_on_H
+#
+#  nejhorsi bod z  d on h k2 - asi kvuli sile kinematiky
+#
+ 642.376    0.292  h2_h1_h2_h1_k2   mylar  0.0  T   mylthick  28.5+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0    
+ 1165.33    6.100  h2_h1_h2_h1_k1   mylar  0.0  T   mylthick  28.5+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0    
+#
+###### run 70        27 deg  d_on_H
+#pol(1355.62, 0.72)    1269.878  41325.129  44177.253 3254.26 3478.86   12645.122    12315.847
+#  1348.439    1.334    8372.570    564.197    603.136   6.74   7.20    5542.430     5213.154
+#  1376.018    0.907    3943.276    533.312    570.119  13.52  14.46    9971.724     9642.448
+ 553.026  0.157 h2_h1_h2_h1_k2   mylar  0.0  T   mylthick  27.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0    
+ 1355.62  0.72  h2_h1_h2_h1_k1   mylar  0.0  T   mylthick  27.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0    
+#
+######  run 69         d_on_H  25 deg
+483.211    0.128   h2_h1_h2_h1_k2   mylar  0.0  T   mylthick  25.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0    
+#  tenhle bod je velmi mimo - castecny prunik do lokusu  PRUNIK DO LOKUSU#######
+#1271.22    21.37    h2_h1_h2_h1_k1   mylar  0.0  T   mylthick  25.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0 
+#
+######  run 68          d_on_H  15 deg
+#pol( 340.62  0.39)   13486.294  31783.118  53994.315 235.67 400.36   10985.706    10552.765
+#   340.817    0.060   10552.765    237.256    403.059   2.25   3.82   13919.235    13486.294
+  340.817    0.060  h2_h1_h2_h1_k2   mylar  0.0  T   mylthick  15.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0    
+#
+######  run 67          d_on_H  10 deg
+  312.975    0.068  h2_h1_h2_h1_k2   mylar  0.0  T   mylthick  10.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0    
+#
+#
+#   v grafu jsou  dve vlny k2 a k1. ty reaguji na tloustku Si
+#   po d_on_H   se ukazuje, ze nechame-li bezet krome lin.calib take T a tloustku det, body se srovnaji
+#   16.878337  0.016990 MeV
+#   354.871975  0.406299 um
+#    calib    0.006232 0.009636    0.006232,0.009636
+#   neco jde do zaporna: de1layau,  mylarthick
+#   ############################
+#   alpha reactions
+########################
+#
+#  19 MeV     g.s.  on 16O
+#
+2981.38   4.0  h2_o16_he4_n14   mylar  0.0  T   mylthick  10.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+2883.5    4.0  h2_o16_he4_n14   mylar  0.0  T   mylthick  27.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+#
+#    minipeak   in front of the two  strong  
+2407.14  4.0   h2_o16_he4_n14  mylar  3.948  T   mylthick  10.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+2318     4.0   h2_o16_he4_n14  mylar  3.948  T   mylthick  27.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+#######
+#    two strong  peaks   may be  12C   both
+#
+#####big peak  hi ene
+ 2312.806    0.313   h2_c12_he4_b10  mylar  0.0  T   mylthick  10.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+ 2194.396    0.423   h2_c12_he4_b10  mylar  0.0  T   mylthick  27.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+###### big 2
+ 2209.015    0.203   h2_c12_he4_b10  mylar  0.718  T   mylthick  10.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+ 2093.175    0.909   h2_c12_he4_b10  mylar  0.718  T   mylthick  27.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0 
+#
+###### 3rd after the 2 big
+ 1999.485    0.485   h2_c12_he4_b10  mylar  2.154  T   mylthick  10.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+ 1887.398    1.124   h2_c12_he4_b10  mylar  2.154  T   mylthick  27.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+#
+# dalsi silnyslabsi pred svahem
+#
+ 1786.825    1.232    h2_c12_he4_b10  mylar  3.578  T   mylthick  10.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+  1680.218    1.003   h2_c12_he4_b10  mylar  3.578  T   mylthick  27.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+# dalsi silny na svahu
+#
+ 1609.117    0.592    h2_c12_he4_b10  mylar  4.774  T   mylthick  10.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+ 1507.515    1.217    h2_c12_he4_b10  mylar  4.774  T   mylthick  27.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0  
+#
+# 
+############################################################################
+#      passed   SI
+############################################################################
+#
+#   run 68    d_on_H  15 deg
+#   761.821    0.097   60855.180    505.790    661.483   0.83   1.09     313.820        0.000
+#    d(h    inside the  locus  15deg?  -  tam bude problem s tloustkou dE
+#
+#  761.821    0.097  h2_h1_h2_h1_k1   mylar  0.0  T   mylthick  15.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0 
+#########################
+#########################
+#
+#     TELESCOPE      2 
+#
+#########################
+#########################
+#  run 67    T2 20 deg
+########################
+ 351.556    0.065   h2_h1_h2_h1_k2   mylar  0.0  T   mylthick  20.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0    
+#alpha calib
+# E          dE(*chi)     I        dI         dI(*chi)  dI(%) dI(*chi,%)| TSum-I  TInt-I  
+#  786.821    0.127    6706.979    126.248    468.304   1.88   6.98   34920.021    33943.209
+#  792.991    0.069   14809.797    140.211    520.097   0.95   3.51   26817.203    25840.390
+#  831.061    0.150    5011.822     87.961    326.283   1.76   6.51   36615.178    35638.366
+#  837.070    0.069   14265.218    137.487    509.995   0.96   3.58   27361.782    26384.970
+ 786.821    0.127   he4_he4_he4_he4  mylar  0.0    T4     0.0  0.0   de2layau  de2laysi    0.0 0.0 pde2_1 pde2_0
+ 792.991    0.069   he4_he4_he4_he4  mylar  0.0    T3     0.0  0.0   de2layau  de2laysi    0.0 0.0 pde2_1 pde2_0
+ 831.061    0.150   he4_he4_he4_he4  mylar  0.0    T2     0.0  0.0   de2layau  de2laysi    0.0 0.0 pde2_1 pde2_0
+ 837.070    0.069   he4_he4_he4_he4  mylar  0.0    T1     0.0  0.0   de2layau  de2laysi    0.0 0.0 pde2_1 pde2_0
+#     16O 3.948, 12C 12C 0.718
+#  1944.548    0.319     187.592     23.634     23.634  12.60  12.60     369.408      303.787
+#  2037.634    0.248     288.949     21.134     21.134   7.31   7.31     268.051      202.429
+#  2136.932    1.171      28.048      5.829      5.829  20.78  20.78     528.952      463.330
+ 1944.548    0.319   h2_c12_he4_b10  mylar  0.718  T   mylthick  20.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0
+ 2037.634    0.248   h2_c12_he4_b10  mylar  0.0    T   mylthick  20.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0  
+ 2136.932    1.171   h2_o16_he4_n14  mylar  3.948  T   mylthick  20.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0  
+# run 68 == T2 25 deg
+ 437.707    0.075  h2_h1_h2_h1_k2   mylar  0.0  T   mylthick  25.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0   
+#  E          dE(*chi)     I        dI         dI(*chi)  dI(%) dI(*chi,%)| TSum-I  TInt-I  
+#  1907.728    0.288     221.203     24.303     24.303  10.99  10.99     515.797      443.732
+#  2000.358    0.201     418.451     25.012     25.012   5.98   5.98     318.549      246.483
+#  2108.081    1.063      40.012      6.855      6.855  17.13  17.13     696.988      624.923
+ 1907.728    0.288    h2_c12_he4_b10  mylar  0.718  T   mylthick  25.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0
+ 2000.358    0.201    h2_c12_he4_b10  mylar  0.0    T   mylthick  25.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0  
+ 2108.081    1.063    h2_o16_he4_n14  mylar  3.948  T   mylthick  25.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0  
+ 2621.6      2        h2_o16_he4_n14  mylar  0.0    T   mylthick  25.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0  
+# T2  low stat
+2654    5     h2_o16_he4_n14  mylar  0.0   T   mylthick  20.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0  
+2137    3     h2_o16_he4_n14  mylar  3.948 T   mylthick  20.0+dan1   de2layau  de2laysi  0.0 0.0 pde2_1 pde2_0  
+########################
+#      T 6  -   15 deg
+########################
+#   932.123    0.038   14583.268    193.859    479.026   1.33   3.28   28216.732    27607.349
+#   883.286    0.037   15320.959    139.210    343.989   0.91   2.25   27479.041    26869.658
+#   876.498    0.066    6605.658     88.916    219.713   1.35   3.33   36194.342    35584.959
+#   925.573    0.083    4840.722     76.605    189.290   1.58   3.91   37959.278    37349.894
+#####
+  876.498    0.066   he4_he4_he4_he4  mylar  0.0    T4     0.0  0.0   de6layau  de6laysi    0.0 0.0 pde6_1 pde6_0
+  883.286    0.037   he4_he4_he4_he4  mylar  0.0    T3     0.0  0.0   de6layau  de6laysi    0.0 0.0 pde6_1 pde6_0
+  925.573    0.083   he4_he4_he4_he4  mylar  0.0    T2     0.0  0.0   de6layau  de6laysi    0.0 0.0 pde6_1 pde6_0
+  932.123    0.038   he4_he4_he4_he4  mylar  0.0    T1     0.0  0.0   de6layau  de6laysi    0.0 0.0 pde6_1 pde6_0
+#  run67  still 15deg
+#  1985.359    0.387     138.944     18.045     19.399  12.99  13.96     629.056      478.386
+#  2193.787    0.267     220.459     17.390     18.695   7.89   8.48     547.541      396.872
+#  2296.295    0.262     275.254     19.168     20.607   6.96   7.49     492.746      342.077
+1985.359    0.387    h2_c12_he4_b10  mylar  2.154  T   mylthick  15.0   de6layau  de6laysi  0.0 0.0 pde6_1 pde6_0 
+2193.787    0.267    h2_c12_he4_b10  mylar 0.718   T   mylthick  15.0   de6layau  de6laysi  0.0 0.0 pde6_1 pde6_0 
+2296.295    0.262    h2_c12_he4_b10  mylar  0.0    T   mylthick  15.0   de6layau  de6laysi  0.0 0.0 pde6_1 pde6_0 
+#---   d on H
+#340.661    0.051    8028.352    209.933    253.610   2.61   3.16    6640.648     6532.583
+340.661    0.051   h2_h1_h2_h1_k2   mylar  0.0  T   mylthick  15.0   de6layau  de6laysi  0.0 0.0 pde6_1 pde6_0   
+2972.3    2.3      h2_o16_he4_n14  mylar   0.0  T   mylthick  15.0   de6layau  de6laysi  0.0 0.0 pde6_1 pde6_0  
+2395     5         h2_o16_he4_n14  mylar  3.948 T   mylthick  15.0   de6layau  de6laysi  0.0 0.0 pde6_1 pde6_0  
+########################
+#      T 7  -   25 deg
+########################
+#pol( 898.82  0.82)     911.289   1827.160   5309.639 200.50 582.65   40582.711    39919.285
+#   926.414    0.039   14047.559    191.102    555.334   1.36   3.95   27446.441    26783.016
+#   878.042    0.039   14697.292    136.738    397.355   0.93   2.70   26796.708    26133.283
+#   871.379    0.070    6504.407     86.108    250.227   1.32   3.85   34989.593    34326.168
+#   919.890    0.087    4774.635     73.681    214.113   1.54   4.48   36719.365    36055.940
+  871.379    0.070  he4_he4_he4_he4  mylar  0.0    T4     0.0  0.0   de7layau  de7laysi    0.0 0.0 pde7_1 pde7_0
+  878.042    0.039  he4_he4_he4_he4  mylar  0.0    T3     0.0  0.0   de7layau  de7laysi    0.0 0.0 pde7_1 pde7_0
+  919.890    0.087  he4_he4_he4_he4  mylar  0.0    T2     0.0  0.0   de7layau  de7laysi    0.0 0.0 pde7_1 pde7_0
+  926.414    0.039  he4_he4_he4_he4  mylar  0.0    T1     0.0  0.0   de7layau  de7laysi    0.0 0.0 pde7_1 pde7_0
+#  fit run67
+#  E          dE(*chi)     I        dI         dI(*chi)  dI(%) dI(*chi,%)| TSum-I  TInt-I  
+#  1871.632    0.937      31.485      6.862      7.113  21.79  22.59     566.515      421.742
+#  1897.648    0.835      53.495      7.681      7.963  14.36  14.88     544.505      399.732
+#  2100.804    0.388     139.749     13.090     13.570   9.37   9.71     458.251      313.478
+#  2201.224    0.241     248.421     20.676     21.434   8.32   8.63     349.579      204.806
+#
+#1871.632    0.937  ?
+1897.648    0.835   h2_c12_he4_b10  mylar  2.154  T   mylthick  25.0   de7layau  de7laysi  0.0 0.0 pde7_1 pde7_0 
+2100.804    0.388   h2_c12_he4_b10  mylar 0.718   T   mylthick  25.0   de7layau  de7laysi  0.0 0.0 pde7_1 pde7_0 
+2201.224    0.241   h2_c12_he4_b10  mylar  0.0    T   mylthick  25.0   de7layau  de7laysi  0.0 0.0 pde7_1 pde7_0 
+2878   4            h2_o16_he4_n14  mylar   0.0   T   mylthick  25.0   de7layau  de7laysi  0.0 0.0 pde7_1 pde7_0    
+2318.6    3.6        h2_o16_he4_n14  mylar  3.948 T   mylthick  25.0   de7layau  de7laysi  0.0 0.0 pde7_1 pde7_0    
+####################################3 results #################################################
+   # p9 : 16.412884  0.002513 
+   # p8 : 0.006308  0.000002 
+   # p7 : -0.058478  0.001937 
+   # p6 : 0.006970  0.000003 
+   # p5 : -0.039568  0.002586 
+   # p4 : 0.006295  0.000002 
+   # p3 : -0.072160  0.001498 
+   # p2 : 0.006368  0.000003 
+   # p1 : -0.103433  0.002807 
+   # p0 : 0.359221  0.032290 
+# #################################################   KINEMATICS 1 ################################
+#############
+#       first  kinematics that passed the Si
+############
+# #  d on H
+# #   477.956    0.088    8597.592    214.032    228.190   2.49   2.65    3473.408     3372.258
+#  477.956    0.088   h2_h1_h2_h1_k2   mylar  0.0  T   mylthick  25.0   de7layau  de7laysi  0.0 0.0 pde7_1 pde7_0   
+# #### T7   kine1
+#  685.3      3    h2_h1_h2_h1_k1   mylar  0.0  T   mylthick  25.0   de7layau  de7laysi  0.0 0.0 pde7_1 pde7_0   
+# #### T6   kine1
+#  794.6      3    h2_h1_h2_h1_k1   mylar  0.0  T   mylthick  15.0   de6layau  de6laysi  0.0 0.0 pde6_1 pde6_0   
+# #### T1   run68 T1   kine1    15deg
+#  761.9      3    h2_h1_h2_h1_k1   mylar  0.0  T   mylthick  15.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0   
+# #### T1  run67 T1   10deg
+# 695.7       3    h2_h1_h2_h1_k1   mylar  0.0  T   mylthick  10.0+dan1   de1layau  de1laysi  0.0 0.0 pde1_1 pde1_0    
