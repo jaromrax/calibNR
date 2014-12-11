@@ -19,7 +19,7 @@ The data are in a text configuration file - e.g. calib.txt
 
 Syntax:
 
-line starting with # is a comment
+line starting with _#_ is a comment
 
 the main part has the structure
 
@@ -28,28 +28,28 @@ the main part has the structure
 #------------------------------------------------------------------------------------------
 ```
 
-k and dk ... are channel and error
+* _k and dk_ ... are channel and error
 
-reaction ... the notation is lowercase elementA where the A is a mass number
+* _reaction_ ... the notation is lowercase elementA where the A is a mass number
          ... the reaction is described by a word projetile_target_ejectile_remnant
          ... isotopes must correspond to data prepared from SRIM and to internal mass tables in the source code
 
-medium ... material of the target
+* _medium_ ... material of the target
        ... must correspond to data prepared from SRIM
 
-Exc.   ... excited state in MeV ... influences kinematics
+* _Exc._   ... excited state in MeV ... influences kinematics
 
-Tbeam  ... kinetic Energy of the projectile
+* _Tbeam_  ... kinetic Energy of the projectile
 
-thickness ... in microns
+* _thickness_ ... in microns
 
-angle ...    beam deviation angle
+* _angle_ ...    beam deviation angle
 
-deadlay ... dead layer of the detector
+* _deadlay_ ... dead layer of the detector
 
-livelay ... detector thickness
+* _livelay_ ... detector thickness
 
-P3-P0 ...  polynomial calibration coefficients highest to lowest order
+* _P3-P0_ ...  polynomial calibration coefficients highest to lowest order
 
 ```
 #########################
@@ -78,3 +78,7 @@ the configuration can have variables and eventualy free for fit:
 #free var pde1_1=step=0.0001
 #free var pde1_0=step=0.0001
 ```
+
+An example of the result:
+
+![alt text](https://github.com/jaromrax/calibNR/blob/master/calib_complex.jpg "pull graph")
