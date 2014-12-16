@@ -19,7 +19,9 @@ The data are in a text configuration file - e.g. calib.txt
 
 Syntax:
 
-line starting with _#_ is a comment
+line starting with __#__ is a comment
+**BUT**
+line starting with __#define__ or __#free__ contains a definition
 
 the main part has the structure
 
@@ -82,3 +84,9 @@ the configuration can have variables and eventualy free for fit:
 An example of the result:
 
 ![alt text](https://github.com/jaromrax/calibNR/blob/master/calib_complex.jpg "pull graph")
+
+Remarks:
+----------
+
+* Use energy in MeV
+* different linear calibration coefficients ... data is shown with different color?

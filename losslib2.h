@@ -27,9 +27,11 @@
 //using namespace std;
 // tchainb has everything with objstring  #include <TObjString.h>
 #include <TChain.h>
-
-
-
+// to have environment
+#include "TEnv.h"
+// to ask for directory 
+#include <sys/types.h>
+#include <sys/stat.h>
 
 /************************************
  *  check what is number and strip it
@@ -573,7 +575,7 @@ TSpline3* qgr_mksplfun(TGraph *cg, float xmin, float xmax, const char *funname="
 
 
 
-int load_losses_table(const char *fname, int soverwrite=0, const char *charpat="srim_losses/"){
+int load_losses_table(const char *fname, int soverwrite=0, const char *charpat=""){
   //==================================================
   // TO LOAD THE dE/dx functions: 
   int overwrite=soverwrite;
@@ -588,8 +590,48 @@ int load_losses_table(const char *fname, int soverwrite=0, const char *charpat="
     }else{printf(" no action....   %s\n", ""); return 0;}
   }
 
+  /*
+Here I will experiment with systemwide  path
+gEnv->GetValue("Unix.*.Root.DynamicPath","")
+
+   */
+  TString dynapa=gEnv->GetValue("Unix.*.Root.DynamicPath","");
+  char* pPath;  pPath = getenv ("HOME");
+  dynapa.ReplaceAll( "~", pPath );
+  TString tok;
+  struct stat info;
+
+  TObjArray *tar=dynapa.Tokenize(":");
+  for (int k=0;k<tar->GetEntries();k++){
+    tok= ((TObjString*)(tar->At(k)))->GetString();
+    tok.Append("/srim_losses/");
+    if( stat( tok.Data(), &info ) != 0 ){
+      //       printf( "cannot access %s\n", tok.Data() );
+    tok.Clear();
+    }else{
+       if( info.st_mode & S_IFDIR )  // S_ISDIR() doesn't exist on my windows 
+	 {
+	   //   printf( "%s is a directory\n", tok.Data() );
+    break;
+	 }else{
+	 //      printf( "%s is no directory\n", tok.Data() );
+    tok.Clear();
+       }
+    }
+  }//all k
+
   TString pat;
-  pat=charpat;   //#########   SUBdirectory
+  if ( strlen(charpat)>0){
+    pat=charpat;   //#########   SUBdirectory
+    printf("%s is ACCEPTED dir. for losses -overr\n",charpat);
+  }else{
+    pat=tok;
+    if ( pat.Length()==0 ){
+      printf("No data path with srim_losses was found%s\n","");
+      exit(0);
+    }
+    printf("%s is ACCEPTED dir. for losses -dynam\n",tok.Data());
+  }
   //  pat="srim_losses/";   //#########   SUBdirectory
   pat.Append( fname );
   TGraph *ccc=(TGraph*) qgr2( pat.Data() );
