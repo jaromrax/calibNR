@@ -581,13 +581,13 @@ int load_losses_table(const char *fname, int soverwrite=0, const char *charpat="
   int overwrite=soverwrite;
   TF1 *f=(TF1*)gROOT->GetListOfFunctions()->FindObject(fname);
   if (f!=NULL){
-    printf(" FUNCTION    %15s    ALREADY EXISTS  ...  ",fname);
+    printf("i ... FUNCTION  %25s ALREADY EXISTS ...",fname);
     if ((f->GetXmin()<0.1)&&(f->GetXmax()>80.)){}else{
       overwrite=1;
     }
-    if (overwrite==1){printf("OVERWRITING - but ....\n");
+    if (overwrite==1){printf(" OVERWRITING - but ....\n");
       f->Delete();
-    }else{printf(" no action....   %s\n", ""); return 0;}
+    }else{printf(" no action.%s\n", ""); return 0;}
   }
 
   /*

@@ -128,6 +128,17 @@ const double angle_error=0.1;   // error of setting the angle ==0.1 degree
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 /******************************************************************
  *
  *         readout_reac_file   
@@ -137,68 +148,121 @@ const double angle_error=0.1;   // error of setting the angle ==0.1 degree
  *
  *    keeps the flie in memory
  */
-int readout_reac_file(const char* filename){
+//VERSION 2  int readout_reac_file(const char* filename){
+int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recursion
   FILE * pFile;
-  int i, j ,  idest;
+  int i, j ,  idest,  imax=0;
   TString token, token2;
   char mystring[MAXLINELENGTH]; // temporary during readout
 
-  pFile = fopen ( filename ,"r");printf("opening...%s\n","");
+  pFile = fopen ( filename ,"r");printf("+ ... opening...%s\n",filename);
   if (pFile==NULL) { printf("cannot open %s,STOP\n", filename ); return 1;} 
 
 
-
-  /*
-   *    readout into memory.   clear field, spaces, add  '='
-   */
-  //****************   readout into memory, some some simplifications
-  i=0;
+  i=ACTI; 
   while ((i<MAXLINES)&&( feof(pFile)==0) ){
     if ( fgets (mystring , MAXLINELENGTH , pFile) ==NULL){
       // mystring remains unchanged at the end, NULL is returned
-      line[i]="\0";
+      //      line[i]="\0";
+      line[i]=" ";
     }else{
       line[i]=mystring;
     }
-   line[i].ReplaceAll('\n','\0');
+
+    //   line[i].ReplaceAll('\n','\0');
+   line[i].ReplaceAll('\n',' ');
    int lastlen=line[i].Length();
+   //  printf("%02d/ %s   /%02d/\n", i, line[i].Data() , lastlen );
+   if ( lastlen==0 ){
+     break;
+   }
+
    //  one space in place of sever spaces - easier to parse later
    //  also  =  will serve as token ==> removing spaces around
    //  e.g.  if length < 4 ==> cannot be data "9 1"
    //   printf("line# %3d\n", i );
    line[i].ToLower(); // necessary to BASIC & FOR lookup_table2
    do {
-     lastlen=line[i].Length();
+     lastlen=line[i].Length();          // again
+     // play with spaces ... reduce ... eliminate
+     line[i].ReplaceAll("    "," ");
+     line[i].ReplaceAll("   "," ");
      line[i].ReplaceAll("  "," ");
      //no spaces at the end of line (will append =)
-     if ( line[i].Last(' ')==(line[i].Length()-1) ){
-       line[i]=line[i](0,line[i].Length()-1) ;
+
+     if ( (line[i].Length()>0)&&(line[i].First(' ')==0)  ){
+       //       printf("Lead1 /%s/\n", line[i].Data() );
+       //       line[i].Strip(TString::kLeading);
+       line[i].Remove(0,1);
+       //       line[i].Prepend("1111");
+       //       printf("Lead2 /%s/\n", line[i].Data() );
      }
+
+     
+     //     printf("LAST /%d : %d/\n",   line[i].Last(' ') , line[i].Length() );
+     if ( (line[i].Last(' ')>0)&&(line[i].Last(' ')==line[i].Length()-1) ){
+       //       printf("Trail1 /%s/\n", line[i].Data() );
+       //        line[i].Strip(TString::kTrailing);
+       line[i].Remove( line[i].Length()-1,1);
+       //       printf("Trail2 /%s/\n", line[i].Data() );
+       
+	//  line[i]=line[i](0,line[i].Length()-1) ;
+     }
+
+     // I use  "="  IN DEFINITIONS
      line[i].ReplaceAll(" #","#");  // comment can start at any column
      line[i].ReplaceAll(" =","=");
      line[i].ReplaceAll("= ","=");
-     if (line[i].Length()<4){ line[i]="#"; }
+     if (line[i].Length()<4){ line[i]="#"; } // AD HOC COMMENTING
+     
      //          printf(" replacing  spaces  %d ->  %d\n",  lastlen, line[i].Length() ) ;
      //     lastlen=line[i].Length();
    }while(  lastlen!=line[i].Length()  );
-   if (line[i].Length()>3){//same i if not
+   //--------------------------------------------------- do while END
 
-   if (line[i].Index("#")==0){
-     // if not predefined text => do not store the line
-     if ( (line[i].Index("#define var ")!=0) &&
-	  (line[i].Index("#free var ")!=0) ){
-       i=i-1;
-     }else{// when # ==>  mark the end with "=" to enable parsing later
-       line[i].Append("=");// may be not needed?
+   //----------------------------------------------- check for keywords
+   if (line[i].Length()>3){//same i if not
+     //------------NEW
+     if  ( line[i].Index("define var")==0){
+       printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
      }
-   }//starts with # 
-   //   printf ("%s\n", line[i].Data()  );
-   i=i+1;
+     if  ( line[i].Index("free var")==0){
+       printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
+     }
+     if  ( line[i].Index("include")==0){
+       printf("i ... %s ", line[i].Data() ); line[i].Append("=");
+       TObjArray *tar= line[i].Tokenize("=");
+       TString token, token2;
+       token2= ((TObjString*)(tar->At(1)))->GetString();//value
+       printf("+ ... including file %s%s\n", token2.Data()   );
+       i--;
+       i=readout_reac_file( token2.Data() , i+1 );
+       
+       tar->Delete();
+
+     }
+       
+     if (line[i].Index("#")==0){
+       i=i-1;
+     }//starts with # --- remove line
+     //   printf ("%s\n", line[i].Data()  );
+     i=i+1;
+     imax=i;
    }//length>3 else just continue with the same i
    else{ line[i]="";}// last line 
   }//while i<MAXLINES
-  printf("closing...%s\n","");
+  printf("+ ... closing...%s\n", filename );
   fclose (pFile);
+  //------------------readount   done -------------
+  if (ACTI==0){
+    printf("i ... REVIEW of %s+includes:\n",filename );
+    for (i=0;i<imax;i++){
+      printf ("%02d/ %s\n", i, line[i].Data()  );
+    }
+  } //ACTI==0
+  else{
+    return imax-1;  // this is for the recursion ....
+  }
   //------------------readount   done -------------
 
 
@@ -213,27 +277,27 @@ int readout_reac_file(const char* filename){
    */
   init_namespace();
   i=0;
-  printf("preparing free vars%s\n","");
+  printf("+ ... preparing free vars%s\n","");
   while( line[i].Length()>0 ){ 
 
 
-      if  (line[i].Index("#free var ")==0 ){//free var
+      if  (line[i].Index("free var ")==0 ){//free var
        TObjArray *tar= line[i].Tokenize("=");
-       printf("%d\n", tar->GetEntries()  );
+  //printf("  %d) /%s/\n", tar->GetEntries(), line[i].Data() ); // must be3
           token= ((TObjString*)(tar->At(0)))->GetString();
 	  //     at 1  is  'step'
           token2= ((TObjString*)(tar->At(2)))->GetString();
-      	  token.Remove(0,10);// remove the #text
+      	  token.Remove(0,9);// remove the #text
 	  if (token.Length()>11){
 	    printf("maximum variables' name length is 12 /%s/\n",
 		   token.Data()	); return 1;}   
 
-
      	  j=lookup_table_tk(  token.Data()  );//variable's position
        tar->Delete();
        free_vars_step[j]=token2.Atof();// fill the value
-      printf("\t... free var /%s/ @%02d has step %11.5lf\n", 
-	       token.Data() , j, free_vars_step[j] );
+      printf("  ... free var /%s/\t @%02d has step %11.5lf   /%s/\n", 
+	     token.Data() , j, free_vars_step[j],  line[i].Data()  );
+      line[i]=""; // NEW DELETE-NO MORE NEEDED_PUZZLES 14element
       }//free var
       i++;
   }//while
@@ -245,50 +309,61 @@ int readout_reac_file(const char* filename){
    *  now we have namespace with all the free variables allocated.
    */
   varnamefreelast=varnamelast;
-  for (int i=0;i<varnamelast;i++){printf("%s=%lf\n", varname[i],variables[i]);}
+  // for (int i=0;i<varnamelast;i++){printf("%s=%lf\n", varname[i],variables[i]);}
 
-  printf(" free vars= %d\n", varnamefreelast );
+  printf("i ... number of free vars= %d\n", varnamefreelast );
 
   minuit_freevars=varnamefreelast;
 
   /*
    *         reorder lines, clear comments, other values into name table
    */
+  printf("+ ... reordering for minuit\n", varnamefreelast );
   i=0; idest=0;// i is source line, j  is destination line
-  while( line[i].Length()>0 ){ 
-    printf ("%2d %2d %s", i,idest,line[i].Data()  ); 
+  //  while( line[i].Length()>0 ){ 
+  while( i<imax ){ 
+    printf ("%3d->%3d %s", i,idest,line[i].Data()  ); 
 
     // REMOVE #comment lines
-    if  (line[i].Index("#")!=0 ){
+    // NEW: put data lines
+    //    if  (line[i].Index("#")!=0 ){
+    if  (
+	  (line[i].Index("define var")!=0)&&
+	  (line[i].Index("free var")!=0)&&
+	  ( line[i].Length()>0)
+	 ){
       line[idest]=line[i].Data();idest++;
     }
 
     //insert the variable into the table: FIXED size 12 of  "#define var "
-    if  (line[i].Index("#define var ")==0 ){
+    if  (line[i].Index("define var ")==0 ){
        TObjArray *tar= line[i].Tokenize("=");
        printf("%d\n", tar->GetEntries()  );
        token= ((TObjString*)(tar->At(0)))->GetString();//var
        token2= ((TObjString*)(tar->At(1)))->GetString();//value
-      	  token.Remove(0,12);// remove the #text, varname remains
+      	  token.Remove(0,11);// remove the #text, varname remains
        	  j=lookup_table_tk(  token.Data()  );//variable's position
        tar->Delete();
        variables[j]=token2.Atof();// fill the value
        //      printf("\t... var /%s/ @%02d contains %11.5lf\n", 
        //      token.Data() , j, variables[j] );
+       line[i]=""; //NEW DELETE LINE-NO  MORE NEEDED-PUZZLES 14element
     }else{//define var 
        printf("%s\n","");
     }//define var
     i=i+1;//  next 
-  }//  while  line[i]  contains  something-------------done ---
+  }//  while  line[i]  contains  something/reordering---------done ---
   minuit_ndata=(idest-1);
 
-  printf(" defined vars= %d\n", varnamelast );
+  printf("i ... number of data for minuit  = %3d\n", idest-1 );
+  printf("i ... number of vars for minuit  = %3d\n", varnamefreelast );
+  printf("i ... number of defined variables= %3d\n", varnamelast );
 
   /*
    *  no we have namespace with all the free variables allocated.
    */
   //  for (int i=0;i<varnamelast;i++){printf("%s=%lf\n", varname[i],variables[i]);}
-  printf("-------------- readout reaction file done ----------%s\n", "");
+  printf("-------------- readout calibration file ended ----------%s\n", "");
   line[idest]=""; // last line ""
   return 0;
 }//readout_reac_file
@@ -473,7 +548,7 @@ int interpolate_varnames_in_table(){
   while( line[i].Length()>0 ){
     //    if  (line[i].Index("#")!=0 ){// not comment
       TObjArray *tar=line[i].Tokenize(" ");
-      if (tar->GetEntries() != 14 ){ printf("not 14 collumns.stop%s\n","");return 1;}
+      if (tar->GetEntries() != 14 ){ printf("data have not 14 collumns.stop%s\n","");return 1;}
       if (tar->GetEntries() == 14 ){
 	acceptedlines++;
       //-------  go through all the tokens and print -----
@@ -506,7 +581,7 @@ int interpolate_varnames_in_table(){
 		   (strpbrk( expr ,  "*" )!=NULL)||    
 		   (strpbrk( expr ,  "/" )!=NULL)    	 
 		   ){
-	      printf("FORM=%s\n" ,  tok.Data()  );
+	      printf("FORMula=%s\n" ,  tok.Data()  );
 	    }else{//lookup_table2_isform==1
 
 	    j=lookup_table_tk( tok.Data()  ); // key point - the NAME
@@ -565,19 +640,22 @@ int interpolate_varnames_in_table(){
     return 1;
   }// varnamelast changed
 
-  i=0; printf("------------------------%s\n","");
+  i=0; printf("----------------------------------------%s\n","");
+  printf("i ... INTERPOLATED values TABLE:\n%s","");
   while( line[i].Length()>0){printf("%2d %s\n",i,line[i].Data() );i++;}
+  i=0; printf("----------------------------------------%s\n","");
 
 
   // alllosstables
-  printf("ALLLOSS TABLES:\n%s\n", alllosstables.Data() );
+  printf("x ... list of ALLLOSS TABLES:\n%s\n", alllosstables.Data() );
 
   if (load_losses_table_all( alllosstables )!=0){return 1;}  
-  printf("------------------------%s\n","");
+  printf("---------------------------------------------------%s\n","");
 
   /*
    *   last printout of  variable table
    */
+  printf("i ... list of variable's space%s:\n", "" );
   for (int i=0;i<varnamelast;i++){ 
     if (i<varnamefreelast){
     printf("%14s=%19.7lf (%lf)\n",varname[i],variables[i],free_vars_step[i] ); 

@@ -90,3 +90,26 @@ Remarks:
 
 * Use energy in MeV
 * different linear calibration coefficients ... data is shown with different color?
+
+ NEW SYSTEM  (REMARKS) :
+ -----------
+
+*  file can have directives define, var, include
+```
+define var T1=5.8038   
+free var T=step=0.01  
+include= two.txt
+```
+
+* equal sign = is also used to easily tokenize
+
+* input format till 2015
+```
+chan  dchan  reaction_a_b_c_d_k12 tgtmaterial excitation Ebeam tgtthick Rangle layerAu layerSi 0.0 0.0  slope offset
+```
+
+* passing through Au and Al passive layers 20nm and 100nm is important for 3he at low energies, not for deuteron at 15MeV
+
+* Energy for thick detector: I cannot fit solely E, FWHM and thus a position is determined by losses in dE. The only way is to fit (dE+E).
+
+* a correct verticality compensation factor should bring a linear dependence.
