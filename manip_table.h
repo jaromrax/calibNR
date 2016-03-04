@@ -686,6 +686,8 @@ sr[i].kine,
  //
  // ----------------   KINEMATICS --------------
  //
+ //  extra evaluated angle error-else it is too stick to angle
+ //
  TKE_ae=angular_E3( sr[i].ap,  sr[i].zp,  sr[i].at,  sr[i].zt,
 		 sr[i].ae,  sr[i].ze,  sr[i].ar,  sr[i].zr,
 		 TKE,   sr[i].ang-angle_error,   sr[i].kine,  sr[i].Exc,
