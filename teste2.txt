@@ -1,9 +1,0 @@
-#-----------------------------------------------------------------------------------------
-# k    dk           reaction     medium   Exc Tbeam thickness angle   deadlay livelay P3  P2  P1   P0
-#------------------------------------------------------------------------------------------
- 1785    .2   h2_c12_he4_b10  mylar    0.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pde1_1 pde1_0  
- 1695    .2   h2_c12_he4_b10  mylar    1.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pde1_1 pde1_0  
- 1231    .2   h2_c12_he4_b10  mylar    6.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pde1_1 pde1_0  
-  837.7  .2   h2_c12_he4_b10  mylar   10.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pde1_1 pde1_0  
- 1728    .2   h2_c12_he4_b10  mylar    0.  T     mylthick  25.0   de1w  e1SI    0.0 0.0 pde1_1 pde1_0  
- 2168   .2    h2_o16_he4_n14  mylar    0.  T     mylthick  25.0   de1w  e1SI    0.0 0.0 pde1_1 pde1_0  

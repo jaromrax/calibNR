@@ -36,7 +36,7 @@ define var mylthick=0.2
 # k    dk           reaction     medium   Exc Tbeam thickness angle   deadlay livelay P3  P2  P1   P0
 #------------------------------------------------------------------------------------------
 # HE4 in dE
-include=teste2.txt
+include=mylare.txt
 #=================================and now we try (E) ==========================
 # 2236   .5    h2_c12_h1_c13   mylar    0.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pe1_1 pe1_0 
 # 1197   .5    h2_c12_h1_c13   mylar   10.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pe1_1 pe1_0 
@@ -45,4 +45,4 @@ include=teste2.txt
 ######### these are shift by 100 channels low
 2136   .5    h2_c12_h1_c13   mylar    0.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pe1_1 pe1_0 
 1097   .5    h2_c12_h1_c13   mylar   10.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pe1_1 pe1_0 
-include=teste3.txt
+include=mylarde.txt

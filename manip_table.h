@@ -17,7 +17,9 @@
 
 #include <TPad.h>
 #include <TStyle.h>
-#include <TPaveText.h>
+#include <TPaveText.h>  // for histogram title
+
+#include <TCanvas.h>
 //#include <TExec.h>
 
 /*
@@ -63,6 +65,7 @@
 /****************************************************************/
 
 
+TCanvas *CANVMAIN;
 
 // this is maximum lines in the table = maximum number of points - #definitions...
 const int MAXLINES=1000;      
@@ -240,6 +243,32 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
      if  ( line[i].Index("free var")==0){
        printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
      }
+     
+     if  ( line[i].Index("spectrum")==0){
+       printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
+       TObjArray *tars= line[i].Tokenize("=");
+       TString  tokeny2;
+       tokeny2= ((TObjString*)(tars->At(1)))->GetString();//value
+       printf("+ ... ... searching for TH1F /%s/\n", tokeny2.Data() );
+       TH1F*hde=(TH1F*)gDirectory->Get( tokeny2.Data() );
+       if (hde!=NULL){
+	 printf("i ... ... TH1F /%s/ found\n", tokeny2.Data() );
+	 tokeny2.Prepend("canv");
+	 TCanvas *c=new TCanvas( tokeny2.Data() , tokeny2.Data()   );
+	 printf("+ ... ... creating canvas %s\n",  tokeny2.Data()  );
+	 c->Draw();	 c->cd();
+	 hde->Draw();
+	 c->SetLogy();
+	 c->SetGridy();
+	 c->SetGridx();
+       }else{ printf("i ... ... TH1F /%s/ NOT found\n", tokeny2.Data() ); }
+
+       printf("+ ... opening canvas and spectrum %s\n", token2.Data()   );
+       //i--; // this will remove completely the trace of include
+       tars->Delete();
+     }// spectrum=
+
+     
      if  ( line[i].Index("include")==0){
        printf("i ... %s ", line[i].Data() ); line[i].Append("=");
        TObjArray *tar= line[i].Tokenize("=");
@@ -250,7 +279,6 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
        i=readout_reac_file( token2.Data() , i+1 );
        i++;line[i]="include return";
        tar->Delete();
-
      }
        
      if (line[i].Index("#")==0){
@@ -340,27 +368,60 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
     //    if  (line[i].Index("#")!=0 ){
     // NEW: put data lines
     // ...+whatever not KEYWORD and non empty=> push to idest.
+
+
+    if  (line[i].Index("spectrum")==0 ){
+       TObjArray *tars= line[i].Tokenize("=");
+         TString  tokeny2;
+	 tokeny2= ((TObjString*)(tars->At(1)))->GetString();//value
+	 tokeny2.Prepend("canv");
+	 TCanvas *cc=(TCanvas*)gROOT->GetListOfCanvases()->FindObject( tokeny2.Data() );
+	 cc->cd();
+       tars->Delete();
+       line[i]="";
+    }
+
+    
+    //---------------- color plays...and now also spectrum
     if (line[i].Index("include=")==0){
       if (colorstack<0){colorstack=-colorstack;}
       colorstack++;
-      printf("### %s ### \n",line[i].Data() );
+      //      printf("### %s ### \n",line[i].Data() );
       TObjArray *tarx= line[i].Tokenize("=");
       TString tokenx2=((TObjString*)(tarx->At(1)))->GetString();
       tarx->Delete();
       sprintf(legend2,"%s",legend);
       sprintf(legend,"%s / %s=%s",legend2,colornames[colorstack-1].Data(),tokenx2.Data() );
-    }
+    }//-------------if include-fill colorstack,legend for later linecolor
+
+   
     if (line[i].Index("include return")==0){colorstack=-colorstack;}
+
+    
+    //================= if not KEYWORD => put data to the queue
     if  (
 	  (line[i].Index("define var")!=0)&&
 	  (line[i].Index("free var")!=0)&&
 	  (line[i].Index("include")!=0)&&
+	  (line[i].Index("spectrum")!=0)&&
 	  ( line[i].Length()>0)
 	 ){
       line[idest]=line[i].Data();
       if (colorstack>0){linecolor[idest]=colorstack;}else{linecolor[idest]=1;}
       idest++;
-    }
+      if (gPad!=NULL){
+	int col=1;
+	TObjArray *tarz=line[i].Tokenize(" ");
+	TString tokenz=((TObjString*)(tarz->At(0)))->GetString();
+	printf("\np ... printing MARKER at %s=%f", tokenz.Data() ,atof(tokenz.Data() ));
+	tarz->Delete();
+	TMarker *m=new TMarker( atof(tokenz.Data() ) , 3., 20 );
+	if (colorstack>0){m->SetMarkerColor(colorstack);}
+	m->Draw();
+      }// gPad ok
+    }//=============== data to queue ==========================
+
+
 
     //insert the variable into the table: FIXED size 12 of  "#define var "
     if  (line[i].Index("define var ")==0 ){
@@ -1072,7 +1133,7 @@ for (int n=0 ; n<tg_nmax ; n++){
   graphtype=1;
 
 
-  
+  CANVMAIN->cd();
  TH2F *hh=new TH2F("hh","hh",1500,0,max_x_chan,200,-rozpty*1.2, rozpty*1.2);
   hh->SetStats(kFALSE);
   char title[150];

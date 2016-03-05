@@ -1,2 +1,0 @@
- 774   .5    h2_c12_h1_c13   mylar   13.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pe1_1 pe1_0 
- 439.8 .5    h2_c12_h1_c13   mylar   16.  T     mylthick  15.0   de1w  e1SI    0.0 0.0 pe1_1 pe1_0 

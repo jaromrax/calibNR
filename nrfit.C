@@ -106,6 +106,7 @@ printf("\n");
   printf("+ ... %s\n","DO LINEAR CALIBRATION ===============================");
  
 
+  CANVMAIN=new TCanvas("nrfit");
   lincal();
 
   //  d=do_kinematics(0);
