@@ -15,6 +15,11 @@
 #include <TLine.h>
 #include <TMarker.h>
 
+#include <TPad.h>
+#include <TStyle.h>
+#include <TPaveText.h>
+//#include <TExec.h>
+
 /*
  *
  * manip_table.h
@@ -67,6 +72,10 @@ const int MAXLINELENGTH=200;    // 113 is usual for 14 items
  *      line[]       keeps   all the file in memory
  */
 TString line[MAXLINES];
+int linecolor[MAXLINES];
+char legend[500]="";
+char legend2[500]="";
+TString colornames[10]={"black","red","green","blue","yellow","magenta","cyan","dgreen","dblue","white"};
 
 TString alllosstables;
 // main structure--------------------------------------
@@ -156,7 +165,7 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
   char mystring[MAXLINELENGTH]; // temporary during readout
 
   pFile = fopen ( filename ,"r");printf("+ ... opening...%s\n",filename);
-  if (pFile==NULL) { printf("cannot open %s,STOP\n", filename ); return 1;} 
+  if (pFile==NULL) { printf("! ... cannot open %s,STOP\n", filename ); return 1;} 
 
 
   i=ACTI; 
@@ -189,7 +198,9 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
      line[i].ReplaceAll("   "," ");
      line[i].ReplaceAll("  "," ");
      //no spaces at the end of line (will append =)
-
+     if ( (line[i].Length()>0)&&(line[i].First('#')>=0)  ){
+       line[i].Remove(line[i].First('#'), line[i].Length()-line[i].First('#')); 
+     }
      if ( (line[i].Length()>0)&&(line[i].First(' ')==0)  ){
        //       printf("Lead1 /%s/\n", line[i].Data() );
        //       line[i].Strip(TString::kLeading);
@@ -210,10 +221,10 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
      }
 
      // I use  "="  IN DEFINITIONS
-     line[i].ReplaceAll(" #","#");  // comment can start at any column
+     //     line[i].ReplaceAll(" #","#");  // comment can start at any column
      line[i].ReplaceAll(" =","=");
      line[i].ReplaceAll("= ","=");
-     if (line[i].Length()<4){ line[i]="#"; } // AD HOC COMMENTING
+     if (line[i].Length()<4){ line[i]=""; } 
      
      //          printf(" replacing  spaces  %d ->  %d\n",  lastlen, line[i].Length() ) ;
      //     lastlen=line[i].Length();
@@ -234,10 +245,10 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
        TObjArray *tar= line[i].Tokenize("=");
        TString token, token2;
        token2= ((TObjString*)(tar->At(1)))->GetString();//value
-       printf("+ ... including file %s%s\n", token2.Data()   );
-       i--;
+       printf("+ ... including file %s\n", token2.Data()   );
+       //i--; // this will remove completely the trace of include
        i=readout_reac_file( token2.Data() , i+1 );
-       
+       i++;line[i]="include return";
        tar->Delete();
 
      }
@@ -254,6 +265,7 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
   printf("+ ... closing...%s\n", filename );
   fclose (pFile);
   //------------------readount   done -------------
+
   if (ACTI==0){
     printf("i ... REVIEW of %s+includes:\n",filename );
     for (i=0;i<imax;i++){
@@ -302,37 +314,52 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
       i++;
   }//while
 
-
-
-
-  /*
-   *  now we have namespace with all the free variables allocated.
-   */
+  //  now we have namespace with all the free variables allocated.
   varnamefreelast=varnamelast;
   // for (int i=0;i<varnamelast;i++){printf("%s=%lf\n", varname[i],variables[i]);}
 
   printf("i ... number of free vars= %d\n", varnamefreelast );
-
+  //============================================================END FREE VAR
   minuit_freevars=varnamefreelast;
 
-  /*
-   *         reorder lines, clear comments, other values into name table
+
+
+  
+  /* =======================
+   *    REORDER REORDER  lines, clear comments, other values into name table
    */
   printf("+ ... reordering for minuit\n", varnamefreelast );
   i=0; idest=0;// i is source line, j  is destination line
+  int colorstack=1;
+  sprintf(legend,"%s=%s ",colornames[colorstack-1].Data(),filename);
   //  while( line[i].Length()>0 ){ 
   while( i<imax ){ 
     printf ("%3d->%3d %s", i,idest,line[i].Data()  ); 
 
     // REMOVE #comment lines
-    // NEW: put data lines
     //    if  (line[i].Index("#")!=0 ){
+    // NEW: put data lines
+    // ...+whatever not KEYWORD and non empty=> push to idest.
+    if (line[i].Index("include=")==0){
+      if (colorstack<0){colorstack=-colorstack;}
+      colorstack++;
+      printf("### %s ### \n",line[i].Data() );
+      TObjArray *tarx= line[i].Tokenize("=");
+      TString tokenx2=((TObjString*)(tarx->At(1)))->GetString();
+      tarx->Delete();
+      sprintf(legend2,"%s",legend);
+      sprintf(legend,"%s / %s=%s",legend2,colornames[colorstack-1].Data(),tokenx2.Data() );
+    }
+    if (line[i].Index("include return")==0){colorstack=-colorstack;}
     if  (
 	  (line[i].Index("define var")!=0)&&
 	  (line[i].Index("free var")!=0)&&
+	  (line[i].Index("include")!=0)&&
 	  ( line[i].Length()>0)
 	 ){
-      line[idest]=line[i].Data();idest++;
+      line[idest]=line[i].Data();
+      if (colorstack>0){linecolor[idest]=colorstack;}else{linecolor[idest]=1;}
+      idest++;
     }
 
     //insert the variable into the table: FIXED size 12 of  "#define var "
@@ -353,9 +380,9 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
     }//define var
     i=i+1;//  next 
   }//  while  line[i]  contains  something/reordering---------done ---
-  minuit_ndata=(idest-1);
+  minuit_ndata=(idest);
 
-  printf("i ... number of data for minuit  = %3d\n", idest-1 );
+  printf("i ... number of data for minuit  = %3d\n", minuit_ndata );
   printf("i ... number of vars for minuit  = %3d\n", varnamefreelast );
   printf("i ... number of defined variables= %3d\n", varnamelast );
 
@@ -585,6 +612,10 @@ int interpolate_varnames_in_table(){
 	    }else{//lookup_table2_isform==1
 
 	    j=lookup_table_tk( tok.Data()  ); // key point - the NAME
+	    if (varnamelast>look1){
+	      printf("! ... PROBLEM - undefined variable /%s/ %d>%d=TOTAL\n", tok.Data(), varnamelast, look1 );
+	      return 9999;
+	    }
 	    if (free_vars_step[j]<=0.0){
 	      //	    printf(" %7.2f", variables[j] );
 	    char ch[40]; sprintf( ch, "%lf",  variables[j] );
@@ -756,7 +787,8 @@ sr[i].kine,
 
     //------------------loose in 50%-----------BEGIN
     // TKE=loose_E( sr[i].T , sr[i].losstab_proj , 0.5*sr[i].tck  , SLICE, verb );
- TKE=loose_E( sr[i].T , sr[i].losstab_proj , 0.5*sr[i].tck  , SLICE, 0 );
+    //===== 1 ======
+    TKE=loose_E( sr[i].T , sr[i].losstab_proj , 0.5*sr[i].tck  , SLICE, 0 );
  // if (verbo!=0){ printf("TKE=%11.5f(mid)  ",  TKE  ); }
 
 
@@ -766,6 +798,7 @@ sr[i].kine,
  //
  //  extra evaluated angle error-else it is too stick to angle
  //
+    //===== 2 ======
  TKE_ae=angular_E3( sr[i].ap,  sr[i].zp,  sr[i].at,  sr[i].zt,
 		 sr[i].ae,  sr[i].ze,  sr[i].ar,  sr[i].zr,
 		 TKE,   sr[i].ang-angle_error,   sr[i].kine,  sr[i].Exc,
@@ -782,6 +815,7 @@ sr[i].kine,
  //   TKE=t3a;
 
     //------------------loose in 50%-----------END
+ //===== 3 ======
  double extendl= sr[i].ang/180*3.1415926;
  extendl=1.0/cos(extendl) * sr[i].tck;
  TKE=loose_E( TKE ,     sr[i].losstab_ejec , 0.5*extendl  , SLICE, 0 );
@@ -790,21 +824,27 @@ sr[i].kine,
  //              ....DETECTOR......
  
  //
-// GOLDEN LAYER
+// GOLDEN LAYER ===== now it is 1st SILICON =========
 //
- TKE=loose_E( TKE ,     sr[i].losstab_ejec_au ,  sr[i].ly1  , SLICE, 0 );
- if (TKE<0){ verbo=3; return -1.0; }
- // if (verbo!=0){ printf("%11.5f(au)",  TKE  );}
- // Si LAYER
- TKE_in=TKE;
+ //===== 4 ======   NEWly  SILICON dE detector
+ double dTKE=TKE; //before dE
+ if (sr[i].ly1>0){
+   TKE=loose_E( TKE ,     sr[i].losstab_ejec_si ,  sr[i].ly1  , SLICE, 0 );
+   if (TKE<0){ verbo=3; return -1.0; }
+   // if (verbo!=0){ printf("%11.5f(au)",  TKE  );}
+   // Si LAYER
+ }
+ dTKE=dTKE-TKE; // (positive) loss in the dE
+ TKE_in=TKE;    // before final
 
-
+ //===== 5 ====== final detector  DO I NEED TO HAVE EXTRA INPUT?
  /*
   * SI   LAYER  
   */
  TKE_out=loose_E( TKE , sr[i].losstab_ejec_si ,  sr[i].ly2  , SLICE, 0 );
  TKE_IN_SI  =   TKE_in  -   TKE_out; // Energy deposited in the detector
 
+  //===== FINAL VALUES : ======
  if (TKE_out==0.0){// find implantation depth
    TKE_out=loose_E( TKE ,sr[i].losstab_ejec_si , sr[i].ly2 , -SLICE, 0 ); 
    sr[i].sidepth=TKE_out;
@@ -813,12 +853,11 @@ sr[i].kine,
  // if (verbo!=0){ printf("%11.5f(si)  (in Si=%11.5f)\n",  TKE_out,  TKE_IN_SI  );}
  // stop here.....
 
-
-
+ 
  /*
   *   e ,   de from  linear dependence
   */
- sr[i].E =  TKE_IN_SI;
+ sr[i].E =  TKE_IN_SI + dTKE ;  // NEWly : total energy dE+E
  //to je kravina 
  // sr[i].dE=  TKE_IN_SI *  sr[i].p1*  sr[i].dk  ;// preliminary linear dependence
  /*
@@ -961,11 +1000,11 @@ printf( "Minuit:  %d parameters\n", varnamefreelast  );
   gM->mnexcm("MIGRAD", arglist ,2,ierflg);// MINUIT RUN - evidently
 
 // Print results
-   printf("smnsat----------------------------%d\n",1);
+   printf("R ... MINUIT STATISTICS----------------------------\n");
    gM->mnstat(amin,edm,errdef,nvpar,nparx,icstat);
-printf("best=%f   estimvert=%f  UP(uncert)=%f   nvari=%d  npar=%d  COVMTX(0-3)=%d \n",amin,edm,errdef, nvpar,nparx,icstat);
+printf("  ... bestXi=%f   estim dist2min=%f  UP(uncert)=%f   nvari=%d  npar=%d  COVMTX(0-3)=%d \n",amin,edm,errdef, nvpar,nparx,icstat);
 
-    printf("mnPrint results----------------------------%d\n",1);
+    printf("R ... Print results----------------------------BEGIN\n");
   for (int i=0;i<varnamefreelast;i++){
     //    vstart[i]=variables[i];
     //    step[i]=free_vars_step[i];
@@ -974,9 +1013,9 @@ printf("best=%f   estimvert=%f  UP(uncert)=%f   nvari=%d  npar=%d  COVMTX(0-3)=%
     variables[i]=p;
     //    gM->mnparm(i, pnam , vstart[i], step[i], 0, 0, ierflg);
   }//for all free params
-    printf("mnPrint results----------------------------%d\n",1);
-    printf("Chi2 = %f   data=%d  params=%d  ChiNorm = %f  \n",  amin, minuit_ndata, minuit_freevars, sqrt( amin / (minuit_ndata-minuit_freevars)  )  );
-    printf("mnPrint results----------------------------%d\n",1);
+    printf("R ... Print results----------------------------MIDDLE\n");
+    printf("  ... Chi2 = %f   data=%d  params=%d  ChiNorm = %f  \n",  amin, minuit_ndata, minuit_freevars, sqrt( amin / (minuit_ndata-minuit_freevars)  )  );
+    printf("R ... Print results----------------------------END\n");
 
 
     /*
@@ -1000,12 +1039,12 @@ for (int n=0 ; n<tg_nmax ; n++){
       if ( (allp1[i]== tg_p1[n]) ){ colorgr[n]=i; i=50;break;   }
     }//i graphs
  }//n - lines
- printf("%d. different graphs\n", maxi+1 );
+ printf("i ... %d. different color graphs (calib.parameter sets)\n", maxi+1 );
 
     //  g  is  a  normal  graph....
     double rozpty=0.002;   // 2 keV
     double rozptytmp=0.0;
-    double max_x_chan=3500.;
+    double max_x_chan=350.;
 /* TGraphErrors *g=new TGraphErrors(tg_nmax, tg_x, tg_y, tg_dx, tg_dy); */
 /*    g->Draw("pawl");  */
 /*    TLine *l=new TLine( 0.0 , p0, 5000. , p1*5000.+p0 ); */
@@ -1029,10 +1068,49 @@ for (int n=0 ; n<tg_nmax ; n++){
 /*
 *    prepare  canvas:
 */
-  TH2F *hh=new TH2F("hh","hh",1500,0,max_x_chan,200,-rozpty*1.1, rozpty*1.1);
+  int graphtype;  // 1== channels,  2==depth
+  graphtype=1;
+
+
+  
+ TH2F *hh=new TH2F("hh","hh",1500,0,max_x_chan,200,-rozpty*1.2, rozpty*1.2);
   hh->SetStats(kFALSE);
-  hh->SetTitle(";channel or impl.depth;E_{theo}-E_{calib}");
+  char title[150];
+  char uitle[150];
+  
+  sprintf(uitle,"Chi2= %f data=%d  params=%d  ChiNorm = %f  \n",  amin, minuit_ndata, minuit_freevars, sqrt( amin / (minuit_ndata-minuit_freevars)  )  );
+  printf("E ... %s\n\n", uitle);
+
+  if (graphtype==1){
+    sprintf(title,"#splitline{%s}{%s};channel;E_{th}-E_{calib}", uitle, legend );}
+  if (graphtype==2){
+    sprintf(title,"#splitline{%s}{%s};implantation depth;E_{th}-E_{calib}", uitle ,legend);}
+
+  //   if (graphtype==1){   hh->SetTitle(";channel;E_{th}-E_{calib}");}
+  //   if (graphtype==2){   hh->SetTitle(";implantation depth;E_{th}-E_{calib}");}
+  // hh->SetTitle(";channel or impl.depth;E_{theo}-E_{calib}");
+  hh->SetTitle( title );
+
+  gStyle->SetTitleStyle(1002); // whitebox -only this is usefull
+
+
+  gStyle->SetTitleFontSize(0.0);
+
+
+  hh->SetTitleOffset(1.4,"X");
+  hh->SetTitleOffset(1.5,"Y");
+
   hh->Draw();
+
+  if (gPad!=NULL){
+    gPad->SetGridx();
+    gPad->SetGridy();
+    TPaveText *pt=(TPaveText*)gPad->GetListOfPrimitives()->FindObject("title");
+    if (pt!=NULL){
+      pt->SetTextSize(0.04);
+      pt->SetTextFont(82);
+    }
+  }
   /*
    *
    *
@@ -1040,8 +1118,6 @@ for (int n=0 ; n<tg_nmax ; n++){
    *
    */
 
-  int graphtype;  // 1== channels,  2==depth
-  graphtype=1;
 
 
   // TRY TO MAKE g1  as  channel x energy
@@ -1061,23 +1137,31 @@ for (int n=0 ; n<tg_nmax ; n++){
   // common line
   TLine *l2=new TLine( 0.0 , 0.0, max_x_chan , 0.0 );
   l2->SetLineColor(2);  l2->Draw("same");
+
+
   
-  // NOW COLOR MARKERS
+  // NOW IMPOSE COLOR MARKERS
   for (int n=0 ; n<tg_nmax ; n++){
     TMarker *m;
     //  channel
     if (graphtype==1){ 
+      printf("","L ... LOSSES  graph\n");
          m=new TMarker( tg_x[n], tg_y[n], 22 );
     }
     //  implantation depth
-    if (graphtype==2){ 
+    if (graphtype==2){
+      printf("","D ... implantation DEPTH graph\n");
          m=new TMarker( tg_xdep[n], tg_y[n], 22 );
     }
 
-    m->SetMarkerColor( colorgr[n]+1 );
+    //    m->SetMarkerColor( colorgr[n]+1 );
+    //    m->SetMarkerStyle( 19+linecolor[n] ); // colorstack after include=
+    m->SetMarkerColor( linecolor[n] );
+    m->SetMarkerStyle( 19+colorgr[n]+1 ); // colorstack after include=
+    //    gStyle->SetEndErrorSize(2);
+    //    m->SetFillColor( colorgr[n]+1 );
     m->Draw();
-
-  }// marker 
+  }// for all markers
 
   // }// VERBOSITY
   //  return;
