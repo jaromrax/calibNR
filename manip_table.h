@@ -376,7 +376,7 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
 	 tokeny2= ((TObjString*)(tars->At(1)))->GetString();//value
 	 tokeny2.Prepend("canv");
 	 TCanvas *cc=(TCanvas*)gROOT->GetListOfCanvases()->FindObject( tokeny2.Data() );
-	 cc->cd();
+	 if (cc!=NULL){	 cc->cd();}
        tars->Delete();
        line[i]="";
     }
