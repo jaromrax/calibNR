@@ -1,0 +1,9 @@
+#######################################################################################################3
+# ###vodiky
+  1010.2  1.2  he3_h1_he3_h1_k2  mylar  0.0  T  mylthick 15.0+dan2   de2w  e2w  0.0 0.0 pde2_1 pde2_0
+   992.   15.2  he3_h1_he3_h1_k2  mylar  0.0  T  mylthick 15.0+dan2   de2w  e2w  0.0 0.0 pde2_1 pde2_0
+  1020.   15.2  he3_h1_he3_h1_k2  mylar  0.0  T  mylthick 15.0+dan2   de2w  e2w  0.0 0.0 pde2_1 pde2_0
+  2218.56  1.2  he3_h1_he3_h1_k1  mylar  0.0  T  mylthick 15.0+dan2   de2w  e2w  0.0 0.0 pde2_1 pde2_0
+  2207.    15.2  he3_h1_he3_h1_k1  mylar  0.0  T  mylthick 15.0+dan2   de2w  e2w  0.0 0.0 pde2_1 pde2_0
+  2272.    15.2  he3_h1_he3_h1_k1  mylar  0.0  T  mylthick 15.0+dan2   de2w  e2w  0.0 0.0 pde2_1 pde2_0
+  

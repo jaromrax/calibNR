@@ -76,9 +76,13 @@ const int MAXLINELENGTH=200;    // 113 is usual for 14 items
  */
 TString line[MAXLINES];
 int linecolor[MAXLINES];
+TCanvas* linecanv[MAXLINES];  //every line has a potential canvas
 char legend[500]="";
 char legend2[500]="";
 TString colornames[10]={"black","red","green","blue","yellow","magenta","cyan","dgreen","dblue","white"};
+
+
+
 
 TString alllosstables;
 // main structure--------------------------------------
@@ -234,8 +238,9 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
    }while(  lastlen!=line[i].Length()  );
    //--------------------------------------------------- do while END
 
+   
    //----------------------------------------------- check for keywords
-   if (line[i].Length()>3){//same i if not
+   if (line[i].Length()>=0){//same i if not  problem with include-//-include
      //------------NEW
      if  ( line[i].Index("define var")==0){
        printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
@@ -243,12 +248,15 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
      if  ( line[i].Index("free var")==0){
        printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
      }
-     
+     if  ( line[i].Index("spectrum")==0){
+       printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
+     }
+     /*
      if  ( line[i].Index("spectrum")==0){
        printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
        TObjArray *tars= line[i].Tokenize("=");
        TString  tokeny2;
-       tokeny2= ((TObjString*)(tars->At(1)))->GetString();//value
+       tokeny2= ((TObjString*)(tars->At(1)))->GetString();//value=name of spe
        printf("+ ... ... searching for TH1F /%s/\n", tokeny2.Data() );
        TH1F*hde=(TH1F*)gDirectory->Get( tokeny2.Data() );
        if (hde!=NULL){
@@ -267,20 +275,24 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
        //i--; // this will remove completely the trace of include
        tars->Delete();
      }// spectrum=
-
+     */
+     
      
      if  ( line[i].Index("include")==0){
        printf("i ... %s ", line[i].Data() ); line[i].Append("=");
        TObjArray *tar= line[i].Tokenize("=");
        TString token, token2;
        token2= ((TObjString*)(tar->At(1)))->GetString();//value
-       printf("+ ... including file %s\n", token2.Data()   );
+       printf("+ ... including file /%s/ at line %d\n", token2.Data() , i  );
        //i--; // this will remove completely the trace of include
        i=readout_reac_file( token2.Data() , i+1 );
        i++;line[i]="include return";
        tar->Delete();
-     }
-       
+     }// include=
+     
+     if (line[i].Length()==0){
+       i=i-1;
+     }// empty line  --- remove line /problem at include-include/
      if (line[i].Index("#")==0){
        i=i-1;
      }//starts with # --- remove line
@@ -290,7 +302,7 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
    }//length>3 else just continue with the same i
    else{ line[i]="";}// last line 
   }//while i<MAXLINES
-  printf("+ ... closing...%s\n", filename );
+  printf("+ ... closing.../%s/  at line %d\n", filename, i );
   fclose (pFile);
   //------------------readount   done -------------
 
@@ -308,9 +320,9 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
 
 
 
+  //................    SECOND ROUND ............ free vars first
 
-
-
+  
   // ****     create  table of variables  ********
   /*    free vars  must be first  in the table.
    *      clear namespace and start with  freevars
@@ -320,28 +332,32 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
   printf("+ ... preparing free vars%s\n","");
   while( line[i].Length()>0 ){ 
 
-
       if  (line[i].Index("free var ")==0 ){//free var
        TObjArray *tar= line[i].Tokenize("=");
-  //printf("  %d) /%s/\n", tar->GetEntries(), line[i].Data() ); // must be3
-          token= ((TObjString*)(tar->At(0)))->GetString();
-	  //     at 1  is  'step'
-          token2= ((TObjString*)(tar->At(2)))->GetString();
-      	  token.Remove(0,9);// remove the #text
-	  if (token.Length()>11){
-	    printf("maximum variables' name length is 12 /%s/\n",
-		   token.Data()	); return 1;}   
-
-     	  j=lookup_table_tk(  token.Data()  );//variable's position
+       //printf("  %d) /%s/\n", tar->GetEntries(), line[i].Data() ); // must be3
+       token= ((TObjString*)(tar->At(0)))->GetString();
+       //     at 1  is  'step'
+       token2= ((TObjString*)(tar->At(2)))->GetString();
+       token.Remove(0,9);// remove the #text
+       if (token.Length()>11){
+	 printf("maximum variables' name length is 12 /%s/\n",
+		token.Data()	); return 1;}   
+       
+       j=lookup_table_tk(  token.Data()  );//variable's position
        tar->Delete();
        free_vars_step[j]=token2.Atof();// fill the value
-      printf("  ... free var /%s/\t @%02d has step %11.5lf   /%s/\n", 
-	     token.Data() , j, free_vars_step[j],  line[i].Data()  );
-      line[i]=""; // NEW DELETE-NO MORE NEEDED_PUZZLES 14element
+       printf("  ... free var /%s/\t @%02d has step %11.5lf   /%s/\n", 
+	      token.Data() , j, free_vars_step[j],  line[i].Data()  );
+       line[i]=""; // NEW DELETE-NO MORE NEEDED_PUZZLES 14element
       }//free var
       i++;
   }//while
 
+
+  //.......................  THIRD ROUND ......................
+
+  
+  
   //  now we have namespace with all the free variables allocated.
   varnamefreelast=varnamelast;
   // for (int i=0;i<varnamelast;i++){printf("%s=%lf\n", varname[i],variables[i]);}
@@ -349,10 +365,7 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
   printf("i ... number of free vars= %d\n", varnamefreelast );
   //============================================================END FREE VAR
   minuit_freevars=varnamefreelast;
-
-
-
-  
+ 
   /* =======================
    *    REORDER REORDER  lines, clear comments, other values into name table
    */
@@ -363,24 +376,34 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
   //  while( line[i].Length()>0 ){ 
   while( i<imax ){ 
     printf ("%3d->%3d %s", i,idest,line[i].Data()  ); 
-
-    // REMOVE #comment lines
-    //    if  (line[i].Index("#")!=0 ){
     // NEW: put data lines
     // ...+whatever not KEYWORD and non empty=> push to idest.
 
 
+    //------------------  spectrum....quite new thing:if TH1=>canvas;cd()
     if  (line[i].Index("spectrum")==0 ){
-       TObjArray *tars= line[i].Tokenize("=");
-         TString  tokeny2;
-	 tokeny2= ((TObjString*)(tars->At(1)))->GetString();//value
-	 tokeny2.Prepend("canv");
-	 TCanvas *cc=(TCanvas*)gROOT->GetListOfCanvases()->FindObject( tokeny2.Data() );
-	 if (cc!=NULL){	 cc->cd();}
-       tars->Delete();
-       line[i]="";
-    }
-
+      TObjArray *tars= line[i].Tokenize("=");
+      TString  tokeny2;
+      tokeny2= ((TObjString*)(tars->At(1)))->GetString();//value
+      printf("+ ... ... searching for TH1F /%s/ in gDir\n", tokeny2.Data() );
+      TH1F*hde=(TH1F*)gDirectory->Get( tokeny2.Data() );
+      if (hde!=NULL){
+	printf("i ... ... TH1F /%s/ found\n", tokeny2.Data() );
+	tokeny2.Prepend("canv");
+	linecanv[i]=(TCanvas*)gROOT->GetListOfCanvases()->FindObject( tokeny2.Data() );
+	if ( linecanv[i]==NULL){
+	  printf("+ ... ... creating canvas %s\n",  tokeny2.Data()  );
+	  linecanv[i]=new TCanvas( tokeny2.Data() , tokeny2.Data()   );
+	}else{ printf("+ ... ... existing canvas %s\n",  tokeny2.Data()  );}
+	linecanv[i]->Draw();linecanv[i]->cd();hde->Draw();
+	linecanv[i]->SetLogy();linecanv[i]->SetGridy();linecanv[i]->SetGridx();
+	for (int j=i;j<MAXLINES;j++){
+	  linecanv[j]=linecanv[i]; // all following lines have this canvas.
+	}
+      }else{ printf("i ... ... TH1F /%s/ NOT found\n", tokeny2.Data() ); }
+      tars->Delete();
+      line[i]="";
+    } //if spectrum
     
     //---------------- color plays...and now also spectrum
     if (line[i].Index("include=")==0){
@@ -393,8 +416,8 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
       sprintf(legend2,"%s",legend);
       sprintf(legend,"%s / %s=%s",legend2,colornames[colorstack-1].Data(),tokenx2.Data() );
     }//-------------if include-fill colorstack,legend for later linecolor
-
-   
+    
+    
     if (line[i].Index("include return")==0){colorstack=-colorstack;}
 
     
@@ -407,9 +430,11 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
 	  ( line[i].Length()>0)
 	 ){
       line[idest]=line[i].Data();
+      linecanv[idest]=linecanv[i]; //one spectrum=>all lines have canvas
       if (colorstack>0){linecolor[idest]=colorstack;}else{linecolor[idest]=1;}
       idest++;
-      if (gPad!=NULL){
+      if (linecanv[i]!=NULL){
+	linecanv[i]->cd();
 	int col=1;
 	TObjArray *tarz=line[i].Tokenize(" ");
 	TString tokenz=((TObjString*)(tarz->At(0)))->GetString();
@@ -418,7 +443,7 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
 	TMarker *m=new TMarker( atof(tokenz.Data() ) , 3., 20 );
 	if (colorstack>0){m->SetMarkerColor(colorstack);}
 	m->Draw();
-      }// gPad ok
+      }// linecanv[i] ok
     }//=============== data to queue ==========================
 
 
@@ -849,6 +874,7 @@ sr[i].kine,
     //------------------loose in 50%-----------BEGIN
     // TKE=loose_E( sr[i].T , sr[i].losstab_proj , 0.5*sr[i].tck  , SLICE, verb );
     //===== 1 ======
+    if (sr[i].tck<0.){sr[i].tck= -sr[i].tck;}
     TKE=loose_E( sr[i].T , sr[i].losstab_proj , 0.5*sr[i].tck  , SLICE, 0 );
  // if (verbo!=0){ printf("TKE=%11.5f(mid)  ",  TKE  ); }
 
@@ -1070,7 +1096,8 @@ printf("  ... bestXi=%f   estim dist2min=%f  UP(uncert)=%f   nvari=%d  npar=%d  
     //    vstart[i]=variables[i];
     //    step[i]=free_vars_step[i];
     sprintf( pnam, "p%d", varnamefreelast-i-1 );
-    gM->GetParameter( i, p, dp );printf("   %s : %f  %f \n",pnam, p,dp);
+    gM->GetParameter( i, p, dp );
+    printf("   %s : %f  %f   (%s) \n",pnam, p,dp,varname[i] );
     variables[i]=p;
     //    gM->mnparm(i, pnam , vstart[i], step[i], 0, 0, ierflg);
   }//for all free params
@@ -1136,21 +1163,29 @@ for (int n=0 ; n<tg_nmax ; n++){
   CANVMAIN->cd();
  TH2F *hh=new TH2F("hh","hh",1500,0,max_x_chan,200,-rozpty*1.2, rozpty*1.2);
   hh->SetStats(kFALSE);
-  char title[150];
-  char uitle[150];
+  char title[250];
+  char uitle[250];
   
   sprintf(uitle,"Chi2= %f data=%d  params=%d  ChiNorm = %f  \n",  amin, minuit_ndata, minuit_freevars, sqrt( amin / (minuit_ndata-minuit_freevars)  )  );
   printf("E ... %s\n\n", uitle);
 
+  //  printf("D ... %s /%s/\n", "doing title,legend:",  legend);
+  //  sprintf(title,"kuku");
+  
   if (graphtype==1){
     sprintf(title,"#splitline{%s}{%s};channel;E_{th}-E_{calib}", uitle, legend );}
   if (graphtype==2){
     sprintf(title,"#splitline{%s}{%s};implantation depth;E_{th}-E_{calib}", uitle ,legend);}
-
+  
+  //  printf("D ... %s /%s/\n", "title",  title);
+  
   //   if (graphtype==1){   hh->SetTitle(";channel;E_{th}-E_{calib}");}
   //   if (graphtype==2){   hh->SetTitle(";implantation depth;E_{th}-E_{calib}");}
   // hh->SetTitle(";channel or impl.depth;E_{theo}-E_{calib}");
   hh->SetTitle( title );
+
+
+  //  printf("D ... %s\n", "gstype play...");
 
   gStyle->SetTitleStyle(1002); // whitebox -only this is usefull
 
@@ -1161,8 +1196,11 @@ for (int n=0 ; n<tg_nmax ; n++){
   hh->SetTitleOffset(1.4,"X");
   hh->SetTitleOffset(1.5,"Y");
 
+  //  printf("D ... %s\n", "plotting the histogram");
+
   hh->Draw();
 
+  //  printf("D ... %s\n", "setting the gpad grids, pavetext");
   if (gPad!=NULL){
     gPad->SetGridx();
     gPad->SetGridy();
@@ -1191,6 +1229,7 @@ for (int n=0 ; n<tg_nmax ; n++){
   g2->SetMarkerStyle(1);
   //  g2->SetMarkerColor(1);
 
+  //  printf("D ... %s\n", "graph draw");
 
   // EITHER  OR
   if (graphtype==1){  g1->Draw("p"); }
@@ -1200,7 +1239,8 @@ for (int n=0 ; n<tg_nmax ; n++){
   l2->SetLineColor(2);  l2->Draw("same");
 
 
-  
+  //    printf("D ... %s\n", "markers");
+
   // NOW IMPOSE COLOR MARKERS
   for (int n=0 ; n<tg_nmax ; n++){
     TMarker *m;
@@ -1211,7 +1251,7 @@ for (int n=0 ; n<tg_nmax ; n++){
     }
     //  implantation depth
     if (graphtype==2){
-      printf("","D ... implantation DEPTH graph\n");
+      //      printf("","D ... implantation DEPTH graph\n");
          m=new TMarker( tg_xdep[n], tg_y[n], 22 );
     }
 

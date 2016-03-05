@@ -653,7 +653,7 @@ gEnv->GetValue("Unix.*.Root.DynamicPath","")
   fif_splinefun->SetNameTitle( fname, ss.Data() ); // make the function unique
   fif_splinefun->SetLineColor(4); 
   fif_splinefun->SetNpx(5000);
-  fif_splinefun->Draw();
+  //  fif_splinefun->Draw();
   //  fif_splinefun->Draw("same");
   //  now - reachable   by   gROOT->GetListOfFunctions()->ls()
   // although SetNpx may be small to display the function nicely, Eval() works

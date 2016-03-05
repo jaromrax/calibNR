@@ -1,0 +1,10 @@
+
+# # peax reaction T3 de3
+#  3233.38    0.324746  he3_o16_he4_o15   mylar  0.00  T   mylthick  25.0+dan3   de3w  e3w  0.0 0.0 pde3_1 pde3_0    
+#  2870.84    0.114247  he3_c12_he4_c11   mylar  0.00  T   mylthick  25.0+dan3   de3w  e3w  0.0 0.0 pde3_1 pde3_0
+# # pruzne rozptylae
+#  2666.45    0.420804  he3_c12_he4_c11   mylar  2.000  T   mylthick  25.0+dan3   de3w  e3w  0.0 0.0 pde3_1 pde3_0
+#  2592.13    0.183616  he3_o16_he4_o15   mylar  6.176  T   mylthick  25.0+dan3   de3w  e3w  0.0 0.0 pde3_1 pde3_0
+#  2426.03    0.47055   he3_c12_he4_c11   mylar  4.319  T   mylthick  25.0+dan3   de3w  e3w  0.0 0.0 pde3_1 pde3_0 
+#  2375.18    0.389802  he3_c12_he4_c11   mylar  4.804  T   mylthick  25.0+dan3   de3w  e3w  0.0 0.0 pde3_1 pde3_0
+ 

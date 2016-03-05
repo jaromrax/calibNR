@@ -86,6 +86,7 @@ printf("                                                                        
 printf("\n");
 
 
+ for (int i=0;i<MAXLINES;i++){ linecanv[i]=NULL; }// we remove all canvases
   
   // PARSE THE table first   
   i=readout_reac_file(filename, 0 ); 
@@ -106,7 +107,12 @@ printf("\n");
   printf("+ ... %s\n","DO LINEAR CALIBRATION ===============================");
  
 
-  CANVMAIN=new TCanvas("nrfit");
+
+  CANVMAIN=(TCanvas*)gROOT->GetListOfCanvases()->FindObject("nrfit");
+  if (CANVMAIN==NULL){
+    CANVMAIN=new TCanvas("nrfit","nrfit");
+    CANVMAIN->Draw();
+  }
   lincal();
 
   //  d=do_kinematics(0);

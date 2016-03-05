@@ -1,0 +1,105 @@
+####################
+# chiNorm 1.697682 #
+####################
+define var T1=5.8038
+define var T2=5.7621
+define var T3=5.4971
+define var T4=5.4542
+
+define var mylthick=1.11   #0.869547
+#free var  mylthick=step=0.01
+
+#-------------- T2 --------------
+define var de2w=500
+define var e2w=5000
+
+define var pde2_1=0.008935
+define var pde2_0=-0.979777
+define var dan2=0.7     #  0.448644   #0.55    0.448644
+free var dan2=step=0.001
+
+#-------------T3-----------------
+define var de3w=500
+# free var de3w=step=0.1  # NO SENSE NOW! dE+E go together
+
+define var e3w=5000
+define var pde3_1=0.009121
+define var pde3_0=-1.121410
+define var dan3=0.116457    #0.58    0.116457
+free var dan3=step=0.001
+
+#--------------T6--------------
+define var  de6w=500
+define var  e6w=5000
+
+define var  pde6_1=0.008990
+define var  pde6_0=-1.024214
+define var  dan6=-0.7         # 0.008440   #0.04    0.008440
+free var dan6=step=0.01
+
+
+define var  pe6_1=0.008990
+define var  pe6_0=-1.024214
+free var pe6_1=step=0.0001
+free var pe6_0=step=0.01
+
+
+#=============================
+
+#   BEAM  FROM  MONO
+#   BEAM FROM FIT: FIX now
+#   fits: 24.944; 24.891; 
+define var T=24.9175   #   24.892129
+#free var T=step=0.001
+
+
+############################
+# free var pde2_1=step=0.000001
+# free var pde2_0=step=0.001
+#
+# free var pde6_1=step=0.000001
+# free var pde6_0=step=0.0001
+#  free var pde3_1=step=0.0001
+#  free var pde3_0=step=0.0001
+#  free var dan3=step=0.001
+
+#-----------------------------------------------------------------------------------------
+# k    dk           reaction     medium    Exc   Tbeam thickness angle   deadlay livelay P3  P2  P1   P0
+#------------------------------------------------------------------------------------------
+#########################
+#
+#     TELESCOPE      1
+#
+#########################
+# alfa T2  dE run6-not?
+ 719.897    0.2  he4_he4_he4_he4  mylar  0.0    T4     0.0  0.0   de2w  e2w    0.0 0.0 pde2_1 pde2_0
+ 724.650    0.2  he4_he4_he4_he4  mylar  0.0    T3     0.0  0.0   de2w  e2w    0.0 0.0 pde2_1 pde2_0
+ 754.670    0.2  he4_he4_he4_he4  mylar  0.0    T2     0.0  0.0   de2w  e2w    0.0 0.0 pde2_1 pde2_0
+ 759.327    0.2  he4_he4_he4_he4  mylar  0.0    T1     0.0  0.0   de2w  e2w    0.0 0.0 pde2_1 pde2_0
+
+# alfa T6  dE run6-not?
+ 720.554    0.2  he4_he4_he4_he4  mylar  0.0    T4     0.0  0.0   de6w   e6w    0.0 0.0 pde6_1 pde6_0
+ 725.258    0.2  he4_he4_he4_he4  mylar  0.0    T3     0.0  0.0   de6w   e6w    0.0 0.0 pde6_1 pde6_0
+ 754.860    0.2  he4_he4_he4_he4  mylar  0.0    T2     0.0  0.0   de6w   e6w    0.0 0.0 pde6_1 pde6_0
+ 759.471    0.2  he4_he4_he4_he4  mylar  0.0    T1     0.0  0.0   de6w   e6w    0.0 0.0 pde6_1 pde6_0
+
+include=jmt2alpha.txt
+
+include=jmt3alpha.txt
+
+include=jmt6alpha.txt
+
+#include=jmelastic.txt
+#include=jmvodik2.txt
+#include=jmvodik6.txt
+#######################################################################################################3
+# ###vodiky
+#najskor z reakcii ziskat energiu a tu fixovat a potom uvolnit uhly a pridat vodiky hnile ! z toho fixovat uhol
+#####################################################
+spectrum=mylarerun23t6_
+2529.7  0.1  he3_c12_h2_n13   mylar  0.0   T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0
+2243.6  0.3  he3_c12_h2_n13   mylar  2.365 T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0
+2389.0  0.1  he3_o16_h2_f17   mylar  0.0   T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0
+2329.8  0.3  he3_o16_h2_f17   mylar  0.495 T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0
+spectrum=mg26t6run24_
+3303.8  0.1  he3_mg26_h2_al27 mylar  0.0   T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0    
