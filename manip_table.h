@@ -1151,7 +1151,22 @@ for (int n=0 ; n<tg_nmax ; n++){
 /* 	   tg_x[n],tg_p1[n], tg_p0[n], */
 /* 	   rozpty */
 /* ); */
+
+//    printf("checking linecanv %d ... ", n);
+    if (linecanv[n]!=NULL){
+      printf("D ... E=%f MeV   dE=%f MeV; k=%f\n",tg_y[n],tg_dy[n],  (tg_y[n]-tg_p0[n])/tg_p1[n] );
+      linecanv[n]->cd();
+      //      TMarker *m=new TMarker(  ( tg_x[n]-tg_p0[n])/tg_p1[n],  100., 27 );
+      TMarker *m=new TMarker( (tg_y[n]-tg_p0[n])/tg_p1[n],  100., 34 ) ;
+      m->SetMarkerColor( linecolor[n] );
+      m->Draw();
+      //    }else{
+      //      printf(" NOT ok ... \n");
+    }
+
+
     tg_y[n]=tg_y[n]- tg_p1[n]*tg_x[n] -tg_p0[n];
+
   }//
 /*
 *    prepare  canvas:

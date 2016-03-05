@@ -96,10 +96,4 @@ include=jmt6alpha.txt
 # ###vodiky
 #najskor z reakcii ziskat energiu a tu fixovat a potom uvolnit uhly a pridat vodiky hnile ! z toho fixovat uhol
 #####################################################
-spectrum=mylarerun23t6_
-2529.7  0.1  he3_c12_h2_n13   mylar  0.0   T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0
-2243.6  0.3  he3_c12_h2_n13   mylar  2.365 T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0
-2389.0  0.1  he3_o16_h2_f17   mylar  0.0   T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0
-2329.8  0.3  he3_o16_h2_f17   mylar  0.495 T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0
-spectrum=mg26t6run24_
-3303.8  0.1  he3_mg26_h2_al27 mylar  0.0   T    mylthick  15.0+dan6   de6w  e6w  0.0 0.0 pe6_1 pe6_0    
+include=jmsumt6.txt
