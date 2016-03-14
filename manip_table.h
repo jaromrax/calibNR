@@ -77,8 +77,8 @@ const int MAXLINELENGTH=200;    // 113 is usual for 14 items
 TString line[MAXLINES];
 int linecolor[MAXLINES];
 TCanvas* linecanv[MAXLINES];  //every line has a potential canvas
-char legend[500]="";
-char legend2[500]="";
+char legend[1500]="";
+char legend2[1500]="";
 TString colornames[10]={"black","red","green","blue","yellow","magenta","cyan","dgreen","dblue","white"};
 
 
@@ -372,7 +372,11 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
   printf("+ ... reordering for minuit\n", varnamefreelast );
   i=0; idest=0;// i is source line, j  is destination line
   int colorstack=1;
-  sprintf(legend,"%s=%s ",colornames[colorstack-1].Data(),filename);
+  if ( colorstack-1<10 ){
+    sprintf(legend,"%s=%s ",colornames[colorstack-1].Data(),filename);
+  } else{
+    sprintf(legend," %s ",filename);
+  }
   //  while( line[i].Length()>0 ){ 
   while( i<imax ){ 
     printf ("%3d->%3d %s", i,idest,line[i].Data()  ); 
@@ -414,7 +418,11 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
       TString tokenx2=((TObjString*)(tarx->At(1)))->GetString();
       tarx->Delete();
       sprintf(legend2,"%s",legend);
-      sprintf(legend,"%s / %s=%s",legend2,colornames[colorstack-1].Data(),tokenx2.Data() );
+      if ( colorstack-1<10 ){  // maybe avoids the crash....
+	sprintf(legend,"%s / %s=%s",legend2,colornames[colorstack-1].Data(),tokenx2.Data() );
+      }else{
+	sprintf(legend,"%s / %s",legend2,tokenx2.Data() );
+      }
     }//-------------if include-fill colorstack,legend for later linecolor
     
     
@@ -1184,13 +1192,17 @@ for (int n=0 ; n<tg_nmax ; n++){
   sprintf(uitle,"Chi2= %f data=%d  params=%d  ChiNorm = %f  \n",  amin, minuit_ndata, minuit_freevars, sqrt( amin / (minuit_ndata-minuit_freevars)  )  );
   printf("E ... %s\n\n", uitle);
 
-  //  printf("D ... %s /%s/\n", "doing title,legend:",  legend);
+  printf("D ... %s /%s/\n", "doing title,legend:",  legend);
   //  sprintf(title,"kuku");
-  
+
   if (graphtype==1){
-    sprintf(title,"#splitline{%s}{%s};channel;E_{th}-E_{calib}", uitle, legend );}
+    sprintf(title,"%s;channel;E_{th}-E_{calib}", uitle );}
+  //    sprintf(title,"#splitline{%s}{%s};channel;E_{th}-E_{calib}", uitle, legend );}
   if (graphtype==2){
-    sprintf(title,"#splitline{%s}{%s};implantation depth;E_{th}-E_{calib}", uitle ,legend);}
+    sprintf(title,"%s;implantation depth;E_{th}-E_{calib}", uitle );
+    //    sprintf(title,"#splitline{%s}{%s};implantation depth;E_{th}-E_{calib}", uitle ,legend);
+  }
+
   
   //  printf("D ... %s /%s/\n", "title",  title);
   
@@ -1200,9 +1212,9 @@ for (int n=0 ; n<tg_nmax ; n++){
   hh->SetTitle( title );
 
 
-  //  printf("D ... %s\n", "gstype play...");
+ printf("D ... %s\n", "gstype play...");
 
-  gStyle->SetTitleStyle(1002); // whitebox -only this is usefull
+ gStyle->SetTitleStyle(1002); // whitebox -only this is usefull
 
 
   gStyle->SetTitleFontSize(0.0);
@@ -1211,11 +1223,16 @@ for (int n=0 ; n<tg_nmax ; n++){
   hh->SetTitleOffset(1.4,"X");
   hh->SetTitleOffset(1.5,"Y");
 
-  //  printf("D ... %s\n", "plotting the histogram");
+  printf("D ... %s\n", "plotting the histogram");
 
   hh->Draw();
+  // TPaveText   addline
+  TText *t=new TText(0., hh->GetYaxis()->GetXmin() , legend );
+  t->SetTextFont(43);
+  t->SetTextSize(11);
+  t->Draw();
 
-  //  printf("D ... %s\n", "setting the gpad grids, pavetext");
+  printf("D ... %s\n", "setting the gpad grids, pavetext");
   if (gPad!=NULL){
     gPad->SetGridx();
     gPad->SetGridy();
@@ -1244,7 +1261,7 @@ for (int n=0 ; n<tg_nmax ; n++){
   g2->SetMarkerStyle(1);
   //  g2->SetMarkerColor(1);
 
-  //  printf("D ... %s\n", "graph draw");
+   printf("D ... %s\n", "graph draw");
 
   // EITHER  OR
   if (graphtype==1){  g1->Draw("p"); }
@@ -1254,7 +1271,7 @@ for (int n=0 ; n<tg_nmax ; n++){
   l2->SetLineColor(2);  l2->Draw("same");
 
 
-  //    printf("D ... %s\n", "markers");
+    printf("D ... %s\n", "markers");
 
   // NOW IMPOSE COLOR MARKERS
   for (int n=0 ; n<tg_nmax ; n++){
