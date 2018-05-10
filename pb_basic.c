@@ -695,7 +695,9 @@ char *find_label(char* s)
 
   for(t=0; t<NUM_LAB; ++t) 
     if(!strcmp(label_table[t].name,s)) return label_table[t].p;
-  return '\0'; /* error condition */
+  char ret[2]="\0";
+  return ret;
+  /*return '\0'; /* error condition */
 }
 
 
@@ -712,7 +714,7 @@ void exec_goto()
   get_token(); /* get label to go to */
   /* find the location of the label */
   loc = find_label(bas_token);
-  if(loc=='\0')
+  if(loc[0]=='\0')
     serror(7); /* label not defined */
 
   else prog=loc;  /* start program running at that loc */
@@ -912,11 +914,12 @@ void input()
 void gosub()
 {
   char *loc;
-
+  char zeroc='\0';
+  
   get_token();
   /* find the label to call */
   loc = find_label(bas_token);
-  if(loc=='\0')
+  if( loc[0]=='\0')
     serror(7); /* label not defined */
   else {
     gpush(prog); /* save place to return to */
