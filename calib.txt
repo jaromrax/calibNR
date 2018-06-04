@@ -1,0 +1,38 @@
+#   sample.txt ---- file with definitions
+#   definitions of variables and assignement  of variables
+#  calibration for  dE1
+define var T1=5.8038
+define var T2=5.7621
+define var T3=5.4971
+define var T4=5.4542
+#-------------- MYLAR --------------
+# mylar ma  179ug/cm2  asi . tj. 
+#define var mylthick=1.28132
+#-------------- T1 --------------
+#     40.3ug
+define var de1layau=0.02086
+define var de1laysi=412
+define var pde1_1=0.006313
+define var pde1_0=-0.063576
+#define var dan1=0.35
+#   BEAM  FROM  MONO  16.18
+#define var T=16.42
+############################
+#free var T=step=0.01
+free var pde1_1=step=0.0001
+free var pde1_0=step=0.0001
+#
+#-----------------------------------------------------------------------------------------
+# k    dk           reaction     medium    Exc   Tbeam thickness angle   deadlay livelay P3  P2  P1   P0
+#------------------------------------------------------------------------------------------
+#########################
+#
+#     TELESCOPE      1
+#
+#########################
+# alfa T1  dE
+ 872.593    0.047  he4_he4_he4_he4  mylar  0.0    T4     0.0  0.0   de1layau  de1laysi    0.0 0.0 pde1_1 pde1_0
+ 879.290    0.025  he4_he4_he4_he4  mylar  0.0    T3     0.0  0.0   de1layau  de1laysi    0.0 0.0 pde1_1 pde1_0
+ 921.394    0.057  he4_he4_he4_he4  mylar  0.0    T2     0.0  0.0   de1layau  de1laysi    0.0 0.0 pde1_1 pde1_0
+ 927.968    0.025  he4_he4_he4_he4  mylar  0.0    T1     0.0  0.0   de1layau  de1laysi    0.0 0.0 pde1_1 pde1_0
+#

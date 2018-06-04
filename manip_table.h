@@ -65,6 +65,9 @@
 /****************************************************************/
 
 
+bool DDEBUG = true; //lowercase
+
+
 TCanvas *CANVMAIN;
 
 // this is maximum lines in the table = maximum number of points - #definitions...
@@ -188,11 +191,19 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
     //   line[i].ReplaceAll('\n','\0');
    line[i].ReplaceAll('\n',' ');
    int lastlen=line[i].Length();
-   //  printf("%02d/ %s   /%02d/\n", i, line[i].Data() , lastlen );
+   if (DDEBUG){
+     if ( line[i].Data()[0]!='#'){
+       printf("     %02d/ %s   /%02d/\n", i, line[i].Data() , lastlen );
+     }
+   }
    if ( lastlen==0 ){
      break;
    }
 
+
+
+
+   
    //  one space in place of sever spaces - easier to parse later
    //  also  =  will serve as token ==> removing spaces around
    //  e.g.  if length < 4 ==> cannot be data "9 1"
@@ -238,18 +249,22 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
    }while(  lastlen!=line[i].Length()  );
    //--------------------------------------------------- do while END
 
-   
+
+
+
+
+   //if (DDEBUG){printf("D... checking for keyword %s","\n");}
    //----------------------------------------------- check for keywords
    if (line[i].Length()>=0){//same i if not  problem with include-//-include
      //------------NEW
      if  ( line[i].Index("define var")==0){
-       printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
+       printf("i ... %s    DEFINEVAR\n", line[i].Data() ); line[i].Append("=");
      }
      if  ( line[i].Index("free var")==0){
-       printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
+       printf("i ... %s     FREEVAR\n", line[i].Data() ); line[i].Append("=");
      }
      if  ( line[i].Index("spectrum")==0){
-       printf("i ... %s\n", line[i].Data() ); line[i].Append("=");
+       printf("i ... %s     SPECTRUM\n", line[i].Data() ); line[i].Append("=");
      }
      /*
      if  ( line[i].Index("spectrum")==0){
@@ -329,7 +344,7 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
    */
   init_namespace();
   i=0;
-  printf("+ ... preparing free vars%s\n","");
+  printf("+ ... preparing free vars%s\n"," ---------------------------------------------- ");
   while( line[i].Length()>0 ){ 
 
       if  (line[i].Index("free var ")==0 ){//free var
@@ -369,7 +384,7 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
   /* =======================
    *    REORDER REORDER  lines, clear comments, other values into name table
    */
-  printf("+ ... reordering for minuit\n", varnamefreelast );
+  printf("+ ... reordering for minuit  (%d)\n", varnamefreelast );
   i=0; idest=0;// i is source line, j  is destination line
   int colorstack=1;
   if ( colorstack-1<10 ){
@@ -484,7 +499,7 @@ int readout_reac_file(const char* filename, int ACTI=0 ){  //actual i for recurs
    *  no we have namespace with all the free variables allocated.
    */
   //  for (int i=0;i<varnamelast;i++){printf("%s=%lf\n", varname[i],variables[i]);}
-  printf("-------------- readout calibration file ended ----------%s\n", "");
+  printf("-------------- readout calibration file ended -----------------------------------%s\n", "");
   line[idest]=""; // last line ""
   return 0;
 }//readout_reac_file
@@ -766,13 +781,13 @@ int interpolate_varnames_in_table(){
   }// varnamelast changed
 
   i=0; printf("----------------------------------------%s\n","");
-  printf("i ... INTERPOLATED values TABLE:\n%s","");
+  printf("\ni ... INTERPOLATED values TABLE:%s\n"," ------------------------------------------- ");
   while( line[i].Length()>0){printf("%2d %s\n",i,line[i].Data() );i++;}
-  i=0; printf("----------------------------------------%s\n","");
+  i=0; printf("----------------------------------------%s\n\n","");
 
 
   // alllosstables
-  printf("x ... list of ALLLOSS TABLES:\n%s\n", alllosstables.Data() );
+  printf("\nx ... list of ALLLOSS TABLES:\n%s\n", alllosstables.Data() );
 
   if (load_losses_table_all( alllosstables )!=0){return 1;}  
   printf("---------------------------------------------------%s\n","");
@@ -1131,8 +1146,8 @@ printf("  ... bestXi=%f   estim dist2min=%f  UP(uncert)=%f   nvari=%d  npar=%d  
 
 for (int n=0 ; n<tg_nmax ; n++){
     for (int i=0;i<50;i++){      
-      if ( (allp1[i]==0.0) ){ colorgr[n]=i;allp1[i]= tg_p1[n];maxi=i; break;  }
-      if ( (allp1[i]== tg_p1[n]) ){ colorgr[n]=i; i=50;break;   }
+      if ( allp1[i]==0.0 ){ colorgr[n]=i;allp1[i]= tg_p1[n];maxi=i; break;  }
+      if ( allp1[i]== tg_p1[n] ){ colorgr[n]=i; i=50;break;   }
     }//i graphs
  }//n - lines
  printf("i ... %d. different color graphs (calib.parameter sets)\n", maxi+1 );
@@ -1278,7 +1293,7 @@ for (int n=0 ; n<tg_nmax ; n++){
     TMarker *m;
     //  channel
     if (graphtype==1){ 
-      printf("","L ... LOSSES  graph\n");
+      printf("%s","L ... LOSSES  graph\n");
          m=new TMarker( tg_x[n], tg_y[n], 22 );
     }
     //  implantation depth

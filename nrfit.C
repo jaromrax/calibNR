@@ -92,7 +92,7 @@ printf("\n");
   i=readout_reac_file(filename, 0 ); 
   if (i!=0){ printf("Error in analyze_react1 ... STOP%s\n","");return;}
 
-  printf("+ ... %s\n","process FORMULAS to VALUES to varnames in table");
+  printf("\n+ ... %s\n","process FORMULAS to VALUES to varnames in table (A,Z list...)");
 
   i=interpolate_varnames_in_table();
   if (i!=0){ printf("%s\n","Problem during 1st parsing the table.STOP");return;}
@@ -100,7 +100,7 @@ printf("\n");
   printf("i ... table : prepared\ni ... structure : prepared\ni ... loss tables : loaded%s\n","" );
 
 
-  printf("+ ... %s\n","do kinematics NOW: ==================================");
+  printf("\n\n+ ... %s\n","do kinematics NOW: ==================================");
   //  preprocess_table();
   d=do_kinematics(1);
   //  printf("total ch2=%lf\n", d );

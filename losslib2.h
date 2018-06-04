@@ -520,7 +520,7 @@ TGraphErrors*  qgr2 (const char* name)
 double splinefun(double *x, double *p) {
   TSpline* sp3;
 // trick to transfer the address of the spline here
-  sp3=(TSpline3*)(int)p[0];  //recover address of  TSpline3*
+  sp3=(TSpline3*)(int64_t)p[0];  //recover address of  TSpline3*
   return  sp3->Eval(x[0]); 
 }
 
@@ -713,7 +713,7 @@ return 0.0;}
   if (verbose>2){printf("preparing to get function %s\n","");}
   TF1 *f=(TF1*)gROOT->GetListOfFunctions()->FindObject(dedx_func);
 
-  if (verbose>2){printf(" spline function found at addr: %d\n", (int64_t)f ); }
+  if (verbose>2){printf(" spline function found at addr: %ld\n", (int64_t)f ); }
 
   if (f==NULL){return 0;}
    

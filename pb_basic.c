@@ -456,7 +456,7 @@ int lookup_table_tk(const char* token){
 */
 double lookup_table2(char* s){
   //  register int i,j;
-  register int i;
+   int i;
 
   /*
    *   solve a formula or just call lookup_table( s )
@@ -571,12 +571,14 @@ void print()
   double answer;
   int len=0, spaces;
   char last_delim; //  warning from compile-may be used uninited
+  // I TRY TO MAKE PUT SOME VALUE FOR COMPILETIME
+  last_delim = *bas_token; 
 
   do {
     get_token(); /* get next list item */
     if(bas_tok==EOL || bas_tok==FINISHED) break;
     if(bas_token_type==QUOTE) { /* is string */
-      printf(bas_token);
+      printf("%s\n",bas_token);
       len += strlen(bas_token);
       get_token();
     }
@@ -671,7 +673,7 @@ void find_eol()
    A -2 is returned when duplicate label is found.
 */
 int get_next_label(char* s){
-  register int t;
+   int t;
 
   for(t=0;t<NUM_LAB;++t) {
     if(label_table[t].name[0]==0) return t;
@@ -691,13 +693,19 @@ int get_next_label(char* s){
 */
 char *find_label(char* s)
 {
-  register int t;
+   int t;
 
   for(t=0; t<NUM_LAB; ++t) 
     if(!strcmp(label_table[t].name,s)) return label_table[t].p;
   char ret[2]="\0";
-  return ret;
-  /*return '\0'; /* error condition */
+  // ----- i tried to return \0  but i needed to allocate \0. 
+  //char *StrResult = malloc( 0 + 2 );
+  char *StrResult = new char[2];
+  StrResult[0]='\0';
+  return StrResult;
+  //return ret;
+  //return NULL;
+  // *return '\0'; /* error condition */ 
 }
 
 
@@ -730,7 +738,7 @@ void exec_goto()
 */
 void label_init()
 {
-  register int t;
+   int t;
 
   for(t=0; t<NUM_LAB; ++t) label_table[t].name[0]='\0';
 }
@@ -894,7 +902,7 @@ void input()
 
   get_token(); /* see if prompt string is present */
   if(bas_token_type==QUOTE) {
-    printf(bas_token); /* if so, print it and check for comma */
+    printf("%s\n",bas_token); /* if so, print it and check for comma */
     get_token();
     if(*bas_token!=',') serror(1);
     get_token();
@@ -902,7 +910,9 @@ void input()
   else printf("? "); /* otherwise, prompt with / */
   var = lookup_table();//toupper(*bas_token)-'A'; /* get the input var */
 
-  scanf("%lf", &i); /* read input */
+  //HA - UNUSED INPUT!!
+  int shit=scanf("%lf", &i); /* read input */
+  printf( " %d :/\n", shit );
 
   variables[var] = i; /* store it */
 }//-----input
@@ -1033,7 +1043,7 @@ void serror(int error){
 /* Get a bas_token. */
 int get_token(){
 
-  register char *temp;
+   char *temp;
 
   bas_token_type=0; bas_tok=0;
   temp=bas_token;
@@ -1262,7 +1272,7 @@ void putback()
 
 int look_up(char* s){
   //  register int i,j;
-  register int i;
+   int i;
   char *p;
 
   /* convert to lowercase */
@@ -1313,7 +1323,7 @@ int iswhite(char c){
 
 /*  Add or subtract two terms. */
 void level2(double* result){
-  register char  op; 
+   char  op; 
   double hold; 
 
   // printf("level2:  came with bas_token %s\n",  bas_token );
@@ -1333,7 +1343,7 @@ void level2(double* result){
 
 /* Multiply or divide two factors. */
 void level3(double* result){
-  register char  op; 
+   char  op; 
   double hold;
 
   level4(result); 
@@ -1358,7 +1368,7 @@ void level4(double* result){
 
 /* Is a unary + or -. */
 void level5(double* result){
-  register char  op; 
+   char  op; 
 
   op = 0; 
   if((bas_token_type==DELIMITER) && (*bas_token=='+' || *bas_token=='-') ) {
@@ -1408,7 +1418,7 @@ void primitive(double* result){
 
 /* Perform the specified arithmetic. */
 void arith(char o, double* r, double* h){
-  register int t, ex;
+   int t, ex;
   int a,b;
 
   //  printf("arith operator : %c\n", o);
