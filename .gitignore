@@ -1,3 +1,5 @@
+*.pcm
+.root_hist
 # Compiled Object files
 *.slo
 *.lo
